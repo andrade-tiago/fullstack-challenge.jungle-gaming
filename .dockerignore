@@ -1,4 +1,5 @@
 node_modules
 dist
 .env
-*.http
+.env.example
+*.log

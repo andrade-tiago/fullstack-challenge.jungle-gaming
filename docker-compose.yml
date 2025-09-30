@@ -1,0 +1,72 @@
+services:
+  gateway:
+    container_name: gateway
+    env_file:
+      - ./.env
+    build:
+      context: .
+      dockerfile: apps/gateway/Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - auth-ms
+    networks:
+      - challenge-network
+
+  auth-ms:
+    container_name: auth-ms
+    env_file:
+      - ./.env
+      - ./apps/auth/.env
+    build:
+      context: .
+      dockerfile: apps/auth/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - challenge-network
+
+  db:
+    image: postgres:17.5-alpine3.21
+    container_name: db
+    ports:
+      - "5432:5432"
+    networks:
+      - challenge-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # rabbitmq:
+  #   image: rabbitmq:3.13-management-alpine
+  #   container_name: rabbitmq
+  #   restart: always
+  #   ports:
+  #     - '5672:5672' # Default port for apps connect to
+  #     - '15672:15672' # Web UI
+  #   networks:
+  #     - challenge-network
+  #   volumes: ['rabbitmq_data:/var/lib/rabbitmq']
+
+volumes:
+  postgres_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+
+networks:
+  challenge-network:
+    driver: bridge
