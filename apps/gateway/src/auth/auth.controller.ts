@@ -1,6 +1,5 @@
 import { Body, Controller, Inject, Logger, Post } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
-import { AuthClient } from "../constants/clients";
 import { firstValueFrom } from "rxjs";
 
 @Controller('auth')

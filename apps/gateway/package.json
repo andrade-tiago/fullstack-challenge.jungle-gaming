@@ -2,8 +2,8 @@
   "name": "@apps/gateway",
   "version": "1.0.0",
   "scripts": {
-    "start": "nest start",
-    "start:dev": "nest start --watch",
+    "dev": "nest start --watch",
+    "start": "node dist/main.js",
     "build": "nest build -p ./tsconfig.json"
   },
   "dependencies": {
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.10",
-    "@packages/tsconfig": "*"
+    "@packages/tsconfig": "*",
+    "@types/passport-jwt": "^4.0.1"
   }
 }

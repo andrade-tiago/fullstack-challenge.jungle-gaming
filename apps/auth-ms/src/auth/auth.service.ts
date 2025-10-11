@@ -6,7 +6,7 @@ import { HashService } from '../common/hash.service';
 import { RegisterDto } from './dto/register.dto';
 import { User } from '../users/user.entity';
 import { ConfigService } from '@nestjs/config';
-import { Env } from '../config/_env.loader';
+import { Env } from '../../_env.loader';
 
 @Injectable()
 export class AuthService {

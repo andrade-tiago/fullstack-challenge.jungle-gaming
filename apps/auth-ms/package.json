@@ -1,13 +1,15 @@
 {
-  "name": "@apps/auth",
+  "name": "@apps/auth-ms",
   "version": "1.0.0",
   "scripts": {
-    "start": "nest start",
-    "start:dev": "nest start --watch",
+    "dev": "nest start --watch",
     "build": "nest build -p ./tsconfig.json",
-    "mig:gen": "npx typeorm-ts-node-commonjs migration:generate -d data-source.ts",
-    "mig:rev": "npx typeorm-ts-node-commonjs migration:revert -d data-source.ts",
-    "mig:run": "npx typeorm-ts-node-commonjs migration:run -d data-source.ts"
+    "start": "node dist/main.js",
+
+    "mig:gen": "npx typeorm-ts-node-commonjs migration:generate -d _data-source.ts",
+    "mig:rev": "npx typeorm-ts-node-commonjs migration:revert -d _data-source.ts",
+
+    "mig:run": "npx typeorm migration:run -d dist/_data-source.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
@@ -31,9 +33,10 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@packages/tsconfig": "*",
+
     "@nestjs/cli": "^11.0.10",
     "@nestjs/schematics": "^11.0.7",
-    "@packages/tsconfig": "*",
     "@types/bcrypt": "^6.0.0",
     "@types/passport-jwt": "^4.0.1",
     "ts-node": "^10.9.2",

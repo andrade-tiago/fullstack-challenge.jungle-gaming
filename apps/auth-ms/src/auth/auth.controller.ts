@@ -13,6 +13,8 @@ export class AuthController {
 
   @MessagePattern('auth.register')
   async register(@Payload() dto: RegisterDto) {
+    Logger.log('chegou');
+
     const user = await this._authService.register(dto);
 
     Logger.log(user, 'Register');

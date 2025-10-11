@@ -1,16 +1,17 @@
 {
   "name": "fullstack-challenge.jungle-gaming",
-  "version": "1.0.0",
-  "type": "commonjs",
   "private": true,
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
+  "packageManager": "npm@11.6.0",
   "scripts": {
-    "build": "turbo run build",
     "dev": "turbo run dev --parallel",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "turbo run build",
+    "start": "turbo run start",
+
+    "mig:run": "turbo run mig:run"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",

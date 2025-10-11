@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { env } from './src/config/_env.loader';
+import { env } from './_env.loader';
 
 export default new DataSource({
   type: 'postgres',

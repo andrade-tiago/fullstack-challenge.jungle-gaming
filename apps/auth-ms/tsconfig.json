@@ -1,0 +1,16 @@
+{
+  "extends": "@packages/tsconfig/nest.json",
+
+  "compilerOptions": {
+    "outDir": "dist",
+  },
+
+  "include": [
+    "./src",
+    "./migrations", 
+    
+    "./main.ts",
+    "_data-source.ts",
+    "_env.loader.ts"
+  ]
+}
