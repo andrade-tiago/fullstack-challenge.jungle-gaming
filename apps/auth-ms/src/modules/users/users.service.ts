@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import type { CreateUserRequestDTO } from '@packages/users'
 import { Repository } from 'typeorm'
@@ -14,19 +14,41 @@ export class UsersService {
     private readonly _passwordService: PasswordService,
   ) {}
 
-  async create(data: CreateUserRequestDTO): Promise<User['id']> {
-    const passwordHash = await this._passwordService.hash(data.password)
+  async create(userData: CreateUserRequestDTO): Promise<User['id']> {
+    await this._throwIfUserWithEmailAlreadyExists(userData.email)
+    await this._throwIfUserWithUsernameAlreadyExists(userData.username)
+
+    const passwordHash = await this._passwordService.hash(userData.password)
 
     try {
-      let user = this._userRepository.create({
-        ...data,
+      const newUser = this._userRepository.create({
+        ...userData,
         password: passwordHash,
       })
-      user = await this._userRepository.save(user)
 
-      return user.id;
+      const createdUser = await this._userRepository.save(newUser)
+
+      return createdUser.id
     } catch {
-      throw new BadRequestException('Invalid credentials');
+      throw new BadRequestException('Invalid data!');
     }
+  }
+
+  private async _throwIfUserWithEmailAlreadyExists(
+    email: User['email']): Promise<void> {
+    const userWithEmailAddressExists =
+      await this._userRepository.existsBy({ email })
+
+    if (userWithEmailAddressExists)
+      throw new ConflictException('User with e-mail alredy exists.')
+  }
+
+  private async _throwIfUserWithUsernameAlreadyExists(
+    username: User['username']): Promise<void> {
+    const userWithUsernameExists =
+      await this._userRepository.existsBy({ username })
+
+    if (userWithUsernameExists)
+      throw new ConflictException('User with e-mail alredy exists.')
   }
 }

@@ -1,4 +1,4 @@
-import { ClientsEnv, clientsEnv } from '@/config/envs/clients.env'
+import { type ClientsEnv, clientsEnv } from '@/config/envs/clients.env'
 import { Provider } from '@nestjs/common'
 
 export const CLIENTS_CONFIG = Symbol('CLIENTS_CONFIG')

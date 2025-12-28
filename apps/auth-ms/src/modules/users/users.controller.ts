@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common'
+import { Controller, Logger } from '@nestjs/common'
 import { MessagePattern, Payload } from '@nestjs/microservices'
 import { UsersService } from './users.service'
 import {
@@ -13,7 +13,7 @@ export class UsersController {
   ) {}
 
   @MessagePattern({ cmd: 'users.create' })
-  async register(@Payload() userData: CreateUserRequestDTO): Promise<CreateUserResponseDTO> {
+  async create(@Payload() userData: CreateUserRequestDTO): Promise<CreateUserResponseDTO> {
     const id = await this._usersService.create(userData)
 
     return { id }

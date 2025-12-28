@@ -5,10 +5,10 @@ import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservice
 
 export const AUTH_CLIENT = Symbol('AUTH_CLIENT')
 
-export const AuthClientProvider: Provider = {
+export const AuthClientProvider: Provider<ClientProxy> = {
   provide: AUTH_CLIENT,
   inject: [CLIENTS_CONFIG],
-  useFactory: (config: ClientsEnv): ClientProxy => {
+  useFactory: (config: ClientsEnv) => {
     return ClientProxyFactory.create({
       transport: Transport.TCP,
       options: {
