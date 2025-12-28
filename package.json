@@ -5,12 +5,11 @@
     "apps/*",
     "packages/*"
   ],
-  "packageManager": "npm@11.6.0",
+  "packageManager": "pnpm@10.26.1",
   "scripts": {
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
     "start": "turbo run start",
-
     "mig:run": "turbo run mig:run"
   },
   "devDependencies": {

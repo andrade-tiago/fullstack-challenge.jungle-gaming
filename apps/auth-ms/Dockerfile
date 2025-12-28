@@ -1,13 +1,49 @@
-FROM node:20 AS builder
-WORKDIR /app
-COPY . .
-RUN npm install -g turbo && turbo prune --scope=@apps/auth-ms --docker
+FROM node:22-alpine AS base
 
-WORKDIR /app/out/full
-RUN npm install && npm run build --filter=@apps/auth-ms
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-FROM node:20-alpine AS runner
-WORKDIR /app
-COPY --from=builder /app/out/full/ .
-WORKDIR /app/apps/auth-ms
+WORKDIR /repo
+
+
+FROM base AS prune
+WORKDIR /repo
+
+COPY turbo.json .
+COPY pnpm-workspace.yaml .
+COPY pnpm-lock.yaml .
+COPY package.json .
+
+COPY apps ./apps
+COPY packages ./packages
+
+RUN pnpm dlx turbo prune @apps/auth-ms --docker
+
+
+FROM base AS build
+
+WORKDIR /repo
+
+COPY --from=prune /repo/out/json/ .
+COPY --from=prune /repo/out/pnpm-lock.yaml .
+
+RUN pnpm install --frozen-lockfile
+
+COPY --from=prune /repo/out/full/ .
+
+RUN pnpm turbo run build --filter=@apps/auth-ms...
+
+RUN pnpm deploy --filter=@apps/auth-ms --prod /repo/deploy --legacy
+
+
+FROM node:22-alpine AS runner
+WORKDIR /repo
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+COPY --from=build /repo/deploy/node_modules ./node_modules
+COPY --from=build /repo/apps/auth-ms/package.json .
+COPY --from=build /repo/apps/auth-ms/dist ./dist
+
+EXPOSE 4000
+
 CMD ["node", "dist/main.js"]

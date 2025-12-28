@@ -1,15 +1,17 @@
 {
   "name": "@apps/auth-ms",
   "version": "1.0.0",
+  "packageManager": "pnpm@10.26.1",
   "scripts": {
     "dev": "nest start --watch",
-    "build": "nest build -p ./tsconfig.json",
+    "build": "nest build -p ./tsconfig.build.json",
     "start": "node dist/main.js",
-
-    "mig:gen": "npx typeorm-ts-node-commonjs migration:generate -d _data-source.ts",
-    "mig:rev": "npx typeorm-ts-node-commonjs migration:revert -d _data-source.ts",
-
-    "mig:run": "npx typeorm migration:run -d dist/_data-source.js"
+    
+    "typeorm": "typeorm-ts-node-commonjs",
+    "mig:gen": "pnpm run typeorm migration:generate -d src/database/data-source.ts",
+    "mig:rev": "pnpm run typeorm migration:revert -d src/database/data-source.ts",
+    "mig:run:dev": "ts-node --project tsconfig.json src/database/scripts/migrate.script.ts",
+    "mig:run:prod": "node dist/database/scripts/migrate.script.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
@@ -20,6 +22,7 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.6",
     "@nestjs/typeorm": "^11.0.0",
+    "@packages/users": "workspace:*",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
@@ -33,10 +36,9 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@packages/tsconfig": "*",
-
     "@nestjs/cli": "^11.0.10",
     "@nestjs/schematics": "^11.0.7",
+    "@packages/tsconfig": "workspace:*",
     "@types/bcrypt": "^6.0.0",
     "@types/passport-jwt": "^4.0.1",
     "ts-node": "^10.9.2",

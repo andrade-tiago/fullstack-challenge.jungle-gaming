@@ -1,11 +1,20 @@
 {
   "compilerOptions": {
-    "module": "nodenext",
-    "target": "es2023",
-
-    "strict": true,
+    "target": "ES2021",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "moduleResolution": "nodenext"
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "declaration": true,
+    "experimentalDecorators": true,
+    "composite": true,
+    "baseUrl": ".",
+    "paths": {
+      "@packages/*": ["packages/*/src"]
+    }
+  },
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
   }
 }

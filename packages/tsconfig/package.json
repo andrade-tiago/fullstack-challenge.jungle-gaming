@@ -1,4 +1,8 @@
 {
   "name": "@packages/tsconfig",
-  "version": "1.0.0"
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "tsconfig-paths": "^4.2.0"
+  }
 }

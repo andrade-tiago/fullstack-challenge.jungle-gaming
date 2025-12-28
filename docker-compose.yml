@@ -1,13 +1,13 @@
 services:
   gateway:
     container_name: gateway
-    env_file:
-      - .env
     build:
       context: .
       dockerfile: apps/gateway/Dockerfile
     ports:
       - "3000:3000"
+    env_file:
+      - apps/gateway/.env
     environment:
       NODE_ENV: production
     depends_on:
@@ -17,14 +17,13 @@ services:
 
   auth-ms:
     container_name: auth-ms
-    env_file:
-      - .env
-      - apps/auth-ms/.env
     build:
       context: .
       dockerfile: apps/auth-ms/Dockerfile
     ports:
-      - "3001:3001"
+      - "4000:4000"
+    env_file:
+      - apps/auth-ms/.env
     environment:
       NODE_ENV: production
     depends_on:
@@ -41,31 +40,20 @@ services:
     networks:
       - challenge-network
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - .env
+      - postgres_data:/var/lib/postgresql/postgres_data
+    environment:
+      POSTGRES_DB: jungle_gaming
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  # rabbitmq:
-  #   image: rabbitmq:3.13-management-alpine
-  #   container_name: rabbitmq
-  #   restart: always
-  #   ports:
-  #     - '5672:5672' # Default port for apps connect to
-  #     - '15672:15672' # Web UI
-  #   networks:
-  #     - challenge-network
-  #   volumes: ['rabbitmq_data:/var/lib/rabbitmq']
-
 volumes:
   postgres_data:
     driver: local
-  # rabbitmq_data:
-  #   driver: local
 
 networks:
   challenge-network:

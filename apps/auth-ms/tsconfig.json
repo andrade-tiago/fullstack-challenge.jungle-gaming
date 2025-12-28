@@ -3,14 +3,12 @@
 
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
   },
 
-  "include": [
-    "./src",
-    "./migrations", 
-    
-    "./main.ts",
-    "_data-source.ts",
-    "_env.loader.ts"
-  ]
+  "include": ["src"]
 }
