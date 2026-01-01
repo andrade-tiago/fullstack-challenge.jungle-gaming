@@ -1,0 +1,18 @@
+{
+  "name": "@packages/types",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "tsc --build --watch"
+  },
+  "dependencies": {
+    "@nestjs/microservices": "^11.1.6"
+  },
+  "devDependencies": {
+    "@packages/tsconfig": "workspace:*"
+  }
+}

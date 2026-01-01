@@ -1,9 +1,10 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import type { CreateUserRequestDTO } from '@packages/users'
 import { Repository } from 'typeorm'
 import { PasswordService } from '../common/password.service'
 import { User } from './user.entity'
+import { AppRpcException, AppRpcExceptionType } from '@packages/types'
 
 @Injectable()
 export class UsersService {
@@ -30,7 +31,10 @@ export class UsersService {
 
       return createdUser.id
     } catch {
-      throw new BadRequestException('Invalid data!');
+      throw new AppRpcException({
+        type: AppRpcExceptionType.BadRequest,
+        message: 'Invalid data!',
+      })
     }
   }
 
@@ -40,7 +44,10 @@ export class UsersService {
       await this._userRepository.existsBy({ email })
 
     if (userWithEmailAddressExists)
-      throw new ConflictException('User with e-mail alredy exists.')
+      throw new AppRpcException({
+        type: AppRpcExceptionType.Conflict,
+        message: 'User with e-mail alredy exists.',
+      })
   }
 
   private async _throwIfUserWithUsernameAlreadyExists(
@@ -49,6 +56,9 @@ export class UsersService {
       await this._userRepository.existsBy({ username })
 
     if (userWithUsernameExists)
-      throw new ConflictException('User with e-mail alredy exists.')
+      throw new AppRpcException({
+        type: AppRpcExceptionType.Conflict,
+        message: 'User with username alredy exists.',
+      })
   }
 }

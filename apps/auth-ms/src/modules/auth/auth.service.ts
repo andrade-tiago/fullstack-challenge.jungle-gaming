@@ -1,18 +1,17 @@
 import {
-  BadRequestException,
   Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common'
+  Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { PasswordService } from '../common/password.service'
 import { User } from '../users/user.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { JWT_CONFIG } from './jwt.config'
-import type { LoginRequestDTO } from '@packages/users'
-import type { JWTPayloadDTO } from './dtos/jwt-payload.dto'
+import type {
+  JwtPayloadDTO,
+  LoginRequestDTO } from '@packages/users'
 import type { JwtEnv } from '@/config/envs/jwt.env'
+import { AppRpcException, AppRpcExceptionType } from '@packages/types'
 
 @Injectable()
 export class AuthService {
@@ -27,44 +26,59 @@ export class AuthService {
     private readonly _jwtService: JwtService,
   ) {}
 
-  async login(credentials: LoginRequestDTO) {
+  async login({ email, username, password }: LoginRequestDTO) {
     let user: User | null = null
 
-    if (credentials.email) {
-      user = await this._usersRepository.findOneBy({ email: credentials.email })
+    if (email) {
+      user = await this._usersRepository.findOneBy({ email })
     }
-    else if (credentials.username) {
-      user = await this._usersRepository.findOneBy({ username: credentials.username })
+    else if (username) {
+      user = await this._usersRepository.findOneBy({ username })
     }
-    else throw new BadRequestException('Email or username required.')
+    else throw new AppRpcException({
+      type: AppRpcExceptionType.BadRequest,
+      message: 'Email or username required.' })
 
     if (!user)
-      throw new UnauthorizedException('Invalid credentials.')
+      throw new AppRpcException({
+        type: AppRpcExceptionType.Unauthorized,
+        message: 'Invalid credentials.' })
 
-    const isValid = await this._passwordService.compare(credentials.password, user.password)
+    const isValid = await this._passwordService.compare(password, user.password)
     if (!isValid)
-      throw new UnauthorizedException('Invalid credentials.')
+      throw new AppRpcException({
+        type: AppRpcExceptionType.Unauthorized,
+        message: 'Invalid credentials.' })
 
-    return {
-      accessToken: this._generateAccessToken(user),
-      refreshToken: this._generateRefreshToken(user),
-    }
+    const accessToken = this._generateAccessToken(user)
+    const refreshToken = this._generateRefreshToken(user)
+
+    return { accessToken, refreshToken }
   }
 
   async refreshToken(token: string) {
     const secret = this._jwtConfig.refreshSecret
 
     try {
-      const payload = this._jwtService.verify<JWTPayloadDTO>(token, { secret })
+      const payload = this._jwtService.verify<JwtPayloadDTO>(token, { secret })
+
       const user = await this._usersRepository.findOneBy({ id: payload.sub })
+      if (!user)
+        throw new AppRpcException({
+          type: AppRpcExceptionType.NotFound,
+          message: 'User not found.' })
 
-      if (!user) throw new Error()
+      const accessToken = this._generateAccessToken(user)
 
-      return {
-        accessToken: this._generateAccessToken(user),
-      }
-    } catch {
-      throw new UnauthorizedException('Invalid or expired refresh token.')
+      return { accessToken }
+    }
+    catch (ex) {
+      if (ex instanceof AppRpcException) throw ex
+
+      throw new AppRpcException({
+        type: AppRpcExceptionType.Unauthorized,
+        message: 'Invalid or expired refresh token.',
+      })
     }
   }
 
@@ -72,7 +86,7 @@ export class AuthService {
     const secret = this._jwtConfig.accessSecret
     const expiresIn = this._jwtConfig.accessExpiration
 
-    const payload: JWTPayloadDTO = {
+    const payload: JwtPayloadDTO = {
       sub: user.id,
       username: user.username,
       email: user.email,  

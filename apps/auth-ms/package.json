@@ -6,7 +6,6 @@
     "dev": "nest start --watch",
     "build": "nest build -p ./tsconfig.build.json",
     "start": "node dist/main.js",
-    
     "typeorm": "typeorm-ts-node-commonjs",
     "mig:gen": "pnpm run typeorm migration:generate -d src/database/data-source.ts",
     "mig:rev": "pnpm run typeorm migration:revert -d src/database/data-source.ts",
@@ -15,13 +14,13 @@
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
-    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.6",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/microservices": "^11.1.6",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.6",
     "@nestjs/typeorm": "^11.0.0",
+    "@packages/types": "workspace:*",
     "@packages/users": "workspace:*",
     "bcrypt": "^6.0.0",
     "class-transformer": "^0.5.1",

@@ -9,8 +9,7 @@
   "scripts": {
     "dev": "turbo run dev --parallel",
     "build": "turbo run build",
-    "start": "turbo run start",
-    "mig:run": "turbo run mig:run"
+    "start": "turbo run start"
   },
   "devDependencies": {
     "@types/node": "^24.5.2",
