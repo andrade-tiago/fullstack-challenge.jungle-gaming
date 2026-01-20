@@ -1,0 +1,19 @@
+{
+  "name": "@packages/tasks",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "tsc --build --watch"
+  },
+  "devDependencies": {
+    "@packages/tsconfig": "workspace:*"
+  },
+  "dependencies": {
+    "@packages/types": "workspace:*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.3"
+  }
+}

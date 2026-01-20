@@ -3,15 +3,19 @@ import {
   Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { PasswordService } from '../common/password.service'
-import { User } from '../users/user.entity'
+import { User } from '../../entities/user.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { JWT_CONFIG } from './jwt.config'
+import {
+  AppRpcException,
+  AppRpcExceptionType } from '@packages/microservices'
 import type {
   JwtPayloadDTO,
-  LoginRequestDTO } from '@packages/users'
+  LoginRequestDTO, 
+  LoginResponseDTO, 
+  RefreshLoginResponseDTO } from '@packages/users'
 import type { JwtEnv } from '@/config/envs/jwt.env'
-import { AppRpcException, AppRpcExceptionType } from '@packages/types'
 
 @Injectable()
 export class AuthService {
@@ -26,7 +30,9 @@ export class AuthService {
     private readonly _jwtService: JwtService,
   ) {}
 
-  async login({ email, username, password }: LoginRequestDTO) {
+  async login({ email, username, password }: LoginRequestDTO)
+    : Promise<LoginResponseDTO>
+  {
     let user: User | null = null
 
     if (email) {
@@ -56,13 +62,15 @@ export class AuthService {
     return { accessToken, refreshToken }
   }
 
-  async refreshToken(token: string) {
+  async refresh(token: string)
+    : Promise<RefreshLoginResponseDTO>
+  {
     const secret = this._jwtConfig.refreshSecret
 
     try {
       const payload = this._jwtService.verify<JwtPayloadDTO>(token, { secret })
 
-      const user = await this._usersRepository.findOneBy({ id: payload.sub })
+      const user = await this._usersRepository.findOneBy({ id: payload.id })
       if (!user)
         throw new AppRpcException({
           type: AppRpcExceptionType.NotFound,
@@ -87,7 +95,7 @@ export class AuthService {
     const expiresIn = this._jwtConfig.accessExpiration
 
     const payload: JwtPayloadDTO = {
-      sub: user.id,
+      id: user.id,
       username: user.username,
       email: user.email,  
     }

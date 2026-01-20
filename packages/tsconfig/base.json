@@ -1,20 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES2021",
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2023",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "declaration": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "composite": true,
     "baseUrl": ".",
     "paths": {
       "@packages/*": ["packages/*/src"]
     }
-  },
-  "ts-node": {
-    "require": ["tsconfig-paths/register"]
   }
 }

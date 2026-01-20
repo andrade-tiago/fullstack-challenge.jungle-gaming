@@ -1,5 +1,5 @@
+import { loadEnv } from '@packages/utils'
 import z from 'zod'
-import { loadEnv } from '../env.loader'
 
 loadEnv()
 

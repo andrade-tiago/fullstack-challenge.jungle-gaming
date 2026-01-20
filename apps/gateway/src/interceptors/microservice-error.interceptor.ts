@@ -4,7 +4,7 @@ import {
   HttpException,
   HttpStatus,
   NestInterceptor } from '@nestjs/common'
-import { AppRpcExceptionType } from '@packages/types'
+import { AppRpcExceptionType, isAppRpcError } from '@packages/microservices'
 import { catchError, throwError } from 'rxjs'
 
 export class MicroserviceErrorInterceptor implements NestInterceptor {
@@ -12,11 +12,15 @@ export class MicroserviceErrorInterceptor implements NestInterceptor {
     return next.handle()
       .pipe(
         catchError(error => {
+          if (!isAppRpcError(error)) {
+            return throwError(() => error)
+          }
+
           const httpErrorDetails = this._toHttpErrorDetails(error)
 
           return throwError(() => new HttpException(
             httpErrorDetails,
-            httpErrorDetails.statusCode
+            httpErrorDetails.statusCode,
           ))
         })
       )

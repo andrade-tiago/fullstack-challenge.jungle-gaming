@@ -1,5 +1,5 @@
-import z from "zod"
-import { loadEnv } from "../env.loader"
+import { loadEnv } from '@packages/utils'
+import z from 'zod'
 
 loadEnv()
 
@@ -10,12 +10,22 @@ const schema = z.object({
   CLIENT_AUTH_PORT: z
     .coerce.number()
     .int(),
+  CLIENT_TASKS_HOST: z
+    .string()
+    .nonoptional(),
+  CLIENT_TASKS_PORT: z
+    .coerce.number()
+    .int(),
 })
 .transform(data => ({
   auth: {
     host: data.CLIENT_AUTH_HOST,
     port: data.CLIENT_AUTH_PORT,
   },
+  tasks: {
+    host: data.CLIENT_TASKS_HOST,
+    port: data.CLIENT_TASKS_PORT,
+  }
 }))
 
 export const clientsEnv = schema.parse(process.env)

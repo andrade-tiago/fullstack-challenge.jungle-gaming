@@ -5,11 +5,12 @@ import {
   Matches,
   MaxLength,
   MinLength } from 'class-validator'
+import { UsersContants } from '../constants/index.js'
 
 export class CreateUserRequestDTO {
   @IsString()
-  @MinLength(2)
-  @MaxLength(16)
+  @MinLength(UsersContants.USERS_USERNAME_MIN_LENGTH)
+  @MaxLength(UsersContants.USERS_USERNAME_MAX_LENGTH)
   @Matches(/^[A-Za-z0-9\_\-]+$/, {
     message: 'filed must contain only uppercase, lowercase, numbers and the symbols (_-)',
   })
@@ -19,7 +20,7 @@ export class CreateUserRequestDTO {
   email!: string
 
   @IsStrongPassword({
-    minLength: 8,
+    minLength: UsersContants.USERS_PASSWORD_MIN_LENGTH,
     minLowercase: 1,
     minNumbers: 1,
     minSymbols: 1,
@@ -28,6 +29,6 @@ export class CreateUserRequestDTO {
   {
     message: 'password must contain at least one uppercase, lowercase, digit and symbol characteres',
   })
-  @MaxLength(72) // Bcrypt limit.
+  @MaxLength(UsersContants.USERS_PASSWORD_MAX_LENGTH)
   password!: string
 }

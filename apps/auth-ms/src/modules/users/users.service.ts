@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import type { CreateUserRequestDTO } from '@packages/users'
-import { Repository } from 'typeorm'
+import type {
+  CreateUserRequestDTO,
+  ExistUsersQueryDTO,
+  ExistUsersQueryResponseDTO } from '@packages/users'
+import { In, Repository } from 'typeorm'
 import { PasswordService } from '../common/password.service'
-import { User } from './user.entity'
-import { AppRpcException, AppRpcExceptionType } from '@packages/types'
+import { User } from '../../entities/user.entity'
+import {
+  AppRpcException,
+  AppRpcExceptionType } from '@packages/microservices'
 
 @Injectable()
 export class UsersService {
@@ -35,6 +40,19 @@ export class UsersService {
         type: AppRpcExceptionType.BadRequest,
         message: 'Invalid data!',
       })
+    }
+  }
+
+  async exist(query: ExistUsersQueryDTO)
+    : Promise<ExistUsersQueryResponseDTO>
+  {
+    const users = await this._userRepository.find({
+      where: { id: In(query.userIds) },
+      select: ['id'],
+    })
+
+    return {
+      existingIds: users.map(user => user.id),
     }
   }
 

@@ -1,10 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { PassportStrategy } from '@nestjs/passport'
-import type { JwtPayloadDTO } from '@packages/users'
-import { AuthenticatedUser } from '../dtos/authenticated-user.dto';
-import type { JwtEnv } from '@/config/envs/jwt.env';
-import { JWT_CONFIG } from '../jwt.config';
+import { JWT_CONFIG } from '../jwt.config'
+import type { AuthenticatedUser, JwtPayloadDTO } from '@packages/users'
+import type { JwtEnv } from '@/config/envs/jwt.env'
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -21,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   validate(payload: JwtPayloadDTO): AuthenticatedUser {
     return {
-      id: payload.sub,
+      id: payload.id,
       username: payload.username,
       email: payload.email,
     }
