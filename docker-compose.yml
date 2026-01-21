@@ -12,6 +12,7 @@ services:
       NODE_ENV: production
     depends_on:
       - auth-ms
+      - tasks-ms
     networks:
       - challenge-network
 
@@ -24,6 +25,23 @@ services:
       - "4000:4000"
     env_file:
       - apps/auth-ms/.env
+    environment:
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - challenge-network
+
+  tasks-ms:
+    container_name: tasks-ms
+    build:
+      context: .
+      dockerfile: apps/tasks-ms/Dockerfile
+    ports:
+      - "5000:5000"
+    env_file:
+      - apps/tasks-ms/.env
     environment:
       NODE_ENV: production
     depends_on:
