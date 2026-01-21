@@ -1,4 +1,4 @@
-import { Controller, Logger } from '@nestjs/common'
+import { Controller } from '@nestjs/common'
 import { MessagePattern, Payload } from '@nestjs/microservices'
 import { TasksService } from './tasks.service'
 import {
@@ -6,7 +6,8 @@ import {
   CreateTaskResponseDTO,
   GetTaskByIdQueryDTO,
   GetTasksPagedQueryDTO,
-  TaskPublicDTO } from '@packages/tasks'
+  TaskPublicDTO, 
+  UpdateTaskCommandDTO} from '@packages/tasks'
 import type { Pagination } from '@packages/types'
 
 @Controller()
@@ -35,5 +36,12 @@ export class TasksController {
     : Promise<Pagination<TaskPublicDTO>>
   {
     return this._tasksService.getPaged(query)
+  }
+
+  @MessagePattern({ cmd: 'tasks.update' })
+  async update(@Payload() command: UpdateTaskCommandDTO)
+    : Promise<TaskPublicDTO>
+  {
+    return this._tasksService.update(command)
   }
 }

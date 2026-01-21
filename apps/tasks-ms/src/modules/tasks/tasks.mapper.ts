@@ -11,6 +11,7 @@ export class TasksMapper {
       status: task.status,
       createdAt: task.createdAt.toISOString(),
       deadline: task.deadline.toISOString(),
+      updatedAt: task.updatedAt.toISOString(),
     }
   }
 }

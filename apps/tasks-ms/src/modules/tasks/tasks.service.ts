@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
 import { Task } from '@/entities/task.entity'
+import { TaskAssignment } from '@/entities/task-assignment.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { TasksMapper } from './tasks.mapper'
 import { Pagination } from '@packages/types'
@@ -11,8 +12,8 @@ import { UsersService } from '../users/users.service'
 import type {
   CreateTaskCommandDTO,
   GetTasksPagedQueryDTO,
-  TaskPublicDTO } from '@packages/tasks'
-import { TaskAssignment } from '@/entities/task-assignment.entity'
+  TaskPublicDTO,
+  UpdateTaskCommandDTO } from '@packages/tasks'
 
 @Injectable()
 export class TasksService {
@@ -83,5 +84,23 @@ export class TasksService {
       pageSize: query.pageSize,
       totalCount: tasksTotalCount,
     })
+  }
+
+  public async update({ id, ...dto }: UpdateTaskCommandDTO)
+    : Promise<TaskPublicDTO>
+  {
+    const task = await this._tasksRepository.findOneBy({ id })
+
+    if (!task) {
+      throw new AppRpcException({
+        type: AppRpcExceptionType.NotFound,
+        message: 'Task with ID not found.',
+      })
+    }
+
+    const updatedTask = this._tasksRepository.merge(task, dto)
+    const savedTask = await this._tasksRepository.save(updatedTask)
+
+    return this._tasksMapper.toPublicDTO(savedTask)
   }
 }

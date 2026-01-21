@@ -6,4 +6,5 @@ export type TaskPublicDTO = {
   priority: string
   status: string
   createdAt: string
+  updatedAt: string
 }

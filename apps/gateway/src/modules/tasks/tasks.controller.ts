@@ -3,13 +3,15 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query } from '@nestjs/common'
 import {
   CreateTaskCommandDTO,
   CreateTaskResponseDTO, 
   GetTasksPagedQueryDTO, 
-  TaskPublicDTO } from '@packages/tasks'
+  TaskPublicDTO, 
+  UpdateTaskDTO } from '@packages/tasks'
 import { TasksService } from './tasks.service'
 import type { Pagination } from '@packages/types'
 
@@ -39,5 +41,14 @@ export class TasksController {
     : Promise<Pagination<TaskPublicDTO>>
   {
     return this._tasksService.getPaged(query)
+  }
+
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateTaskDTO,
+  ) : Promise<TaskPublicDTO>
+  {
+    return this._tasksService.update({ id, ...dto })
   }
 }
