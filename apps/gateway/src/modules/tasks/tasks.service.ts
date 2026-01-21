@@ -1,14 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 import { TASKS_CLIENT } from '../clients/clients/tasks.client'
-import { firstValueFrom } from 'rxjs'
+import { firstValueFrom, lastValueFrom } from 'rxjs'
 import type {
   TaskPublicDTO,
   CreateTaskCommandDTO, 
   CreateTaskResponseDTO,
   GetTaskByIdQueryDTO,
   GetTasksPagedQueryDTO, 
-  UpdateTaskCommandDTO} from '@packages/tasks'
+  UpdateTaskCommandDTO,
+  DeleteTaskCommandDTO} from '@packages/tasks'
 import type { Pagination } from '@packages/types'
 
 @Injectable()
@@ -56,5 +57,14 @@ export class TasksService {
       .send<TaskPublicDTO>({ cmd: 'tasks.update' }, command)
 
     return firstValueFrom(updateTask$)
+  }
+
+  async delete(command: DeleteTaskCommandDTO)
+    : Promise<void>
+  {
+    const deleteTask$ = this._tasksClient
+      .send<void>({ cmd: 'tasks.delete' }, command)
+
+    lastValueFrom(deleteTask$, { defaultValue: undefined })
   }
 }

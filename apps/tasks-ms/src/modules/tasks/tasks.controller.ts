@@ -4,6 +4,7 @@ import { TasksService } from './tasks.service'
 import {
   CreateTaskCommandDTO,
   CreateTaskResponseDTO,
+  DeleteTaskCommandDTO,
   GetTaskByIdQueryDTO,
   GetTasksPagedQueryDTO,
   TaskPublicDTO, 
@@ -43,5 +44,12 @@ export class TasksController {
     : Promise<TaskPublicDTO>
   {
     return this._tasksService.update(command)
+  }
+
+  @MessagePattern({ cmd: 'tasks.delete' })
+  async delete(@Payload() command: DeleteTaskCommandDTO)
+    : Promise<void>
+  {
+    return this._tasksService.delete(command.id)
   }
 }

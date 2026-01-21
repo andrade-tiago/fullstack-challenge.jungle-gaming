@@ -103,4 +103,17 @@ export class TasksService {
 
     return this._tasksMapper.toPublicDTO(savedTask)
   }
+
+  public async delete(id: Task['id'])
+    : Promise<void>
+  {
+    const result = await this._tasksRepository.delete(id)
+
+    if (result.affected === 0) {
+      throw new AppRpcException({
+        type: AppRpcExceptionType.NotFound,
+        message: 'Task with ID not found.',
+      })
+    }
+  }
 }

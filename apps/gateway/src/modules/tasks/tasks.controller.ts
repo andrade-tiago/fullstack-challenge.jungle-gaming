@@ -1,8 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query } from '@nestjs/common'
@@ -30,8 +34,9 @@ export class TasksController {
   }
 
   @Get(':id')
-  async getById(@Param('id') id: TaskPublicDTO['id'])
-    : Promise<TaskPublicDTO>
+  async getById(
+    @Param('id', ParseUUIDPipe) id: TaskPublicDTO['id']
+  ) : Promise<TaskPublicDTO>
   {
     return this._tasksService.getById(id)
   }
@@ -45,10 +50,19 @@ export class TasksController {
 
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateTaskDTO,
   ) : Promise<TaskPublicDTO>
   {
     return this._tasksService.update({ id, ...dto })
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async delete(
+    @Param('id', ParseUUIDPipe) id: string
+  ) : Promise<void>
+  {
+    return this._tasksService.delete({ id })
   }
 }
