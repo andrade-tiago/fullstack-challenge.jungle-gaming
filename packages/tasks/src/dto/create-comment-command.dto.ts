@@ -3,7 +3,7 @@ import {
   IsUUID,
   MaxLength,
   MinLength } from 'class-validator'
-import * as CommentConsts from '../constants/comments.contants'
+import { CommentsConstants } from '../constants'
 
 export class CreateCommentCommandDTO {
   @IsUUID('all')
@@ -13,7 +13,7 @@ export class CreateCommentCommandDTO {
   userId!: string
 
   @IsString()
-  @MinLength(CommentConsts.COMMENT_CONTENT_MIN_LENGTH)
-  @MaxLength(CommentConsts.COMMENT_CONTENT_MAX_LENGTH)
+  @MinLength(CommentsConstants.COMMENT_CONTENT_MIN_LENGTH)
+  @MaxLength(CommentsConstants.COMMENT_CONTENT_MAX_LENGTH)
   content!: string
 }

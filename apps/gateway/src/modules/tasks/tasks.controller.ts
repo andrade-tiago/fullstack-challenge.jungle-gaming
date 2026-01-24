@@ -9,16 +9,27 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  Query } from '@nestjs/common'
+  Query, 
+  UseGuards } from '@nestjs/common'
 import {
   CreateTaskCommandDTO,
-  CreateTaskResponseDTO, 
-  GetTasksPagedQueryDTO, 
-  TaskPublicDTO, 
+  CreateTaskResponseDTO,
+  GetTasksPagedQueryDTO,
+  TaskPublicDTO,
   UpdateTaskDTO } from '@packages/tasks'
 import { TasksService } from './tasks.service'
+import { ApiTags } from '@nestjs/swagger'
+import {
+  ApiCreateTask,
+  ApiDeleteTask,
+  ApiGetTaskById,
+  ApiGetTasksPaged, 
+  ApiUpdateTask } from './decorators/api'
+import { JwtAuthGuard } from '../auth/guards/jwt.guard'
 import type { Pagination } from '@packages/types'
 
+@UseGuards(JwtAuthGuard)
+@ApiTags('Tasks')
 @Controller('tasks')
 export class TasksController {
   constructor(
@@ -26,6 +37,8 @@ export class TasksController {
   ) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiCreateTask()
   async create(@Body() taskData: CreateTaskCommandDTO)
     : Promise<CreateTaskResponseDTO>
   {
@@ -34,14 +47,16 @@ export class TasksController {
   }
 
   @Get(':id')
+  @ApiGetTaskById()
   async getById(
-    @Param('id', ParseUUIDPipe) id: TaskPublicDTO['id']
+    @Param('id', ParseUUIDPipe) id: TaskPublicDTO['id'],
   ) : Promise<TaskPublicDTO>
   {
     return this._tasksService.getById(id)
   }
 
   @Get()
+  @ApiGetTasksPaged()
   async getPaged(@Query() query: GetTasksPagedQueryDTO)
     : Promise<Pagination<TaskPublicDTO>>
   {
@@ -49,6 +64,7 @@ export class TasksController {
   }
 
   @Patch(':id')
+  @ApiUpdateTask()
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateTaskDTO,
@@ -59,8 +75,9 @@ export class TasksController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiDeleteTask()
   async delete(
-    @Param('id', ParseUUIDPipe) id: string
+    @Param('id', ParseUUIDPipe) id: string,
   ) : Promise<void>
   {
     return this._tasksService.delete({ id })

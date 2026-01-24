@@ -1,15 +1,27 @@
 import {
   Body,
   Controller,
-  Logger,
-  Post } from '@nestjs/common'
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post, 
+  UseGuards } from '@nestjs/common'
+import { ApiTags } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
 import {
+  AuthenticatedUser,
   LoginRequestDTO,
   LoginResponseDTO, 
   RefreshLoginRequestDTO,
   RefreshLoginResponseDTO } from '@packages/users'
+import { JwtAuthGuard } from './guards/jwt.guard'
+import { CurrentUser } from './decorators/current-user.decorator'
+import {
+  ApiGetAuthenticatedUser,
+  ApiLogin,
+  ApiRefreshLogin } from './decorators/api'
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -17,6 +29,8 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiLogin()
   async login(@Body() credentials: LoginRequestDTO)
     : Promise<LoginResponseDTO>
   {
@@ -24,9 +38,21 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiRefreshLogin()
   async refresh(@Body() credentials: RefreshLoginRequestDTO)
     : Promise<RefreshLoginResponseDTO>
   {
     return this._authService.refresh(credentials.refreshToken)
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiGetAuthenticatedUser()
+  async getAuthenticatedUser(
+    @CurrentUser() user: AuthenticatedUser,
+  ) : Promise<AuthenticatedUser>
+  {
+    return user
   }
 }

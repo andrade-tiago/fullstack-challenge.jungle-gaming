@@ -12,6 +12,7 @@
     "@packages/tsconfig": "workspace:*"
   },
   "dependencies": {
+    "@nestjs/swagger": "^11.2.5",
     "class-validator": "^0.14.3"
   }
 }

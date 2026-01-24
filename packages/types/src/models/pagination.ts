@@ -3,7 +3,7 @@ export class Pagination<T> {
   public readonly pageSize!: number
   public readonly totalCount!: number
   public readonly totalPages!: number
-  public readonly data!: ReadonlyArray<T>
+  public readonly data!: readonly T[]
 
   constructor(data: {
     pageNumber: number

@@ -11,6 +11,8 @@
   "dependencies": {
     "@nestjs/common": "^11.1.9",
     "@nestjs/microservices": "^11.1.9",
+    "@nestjs/swagger": "^11.2.5",
+    "@packages/types": "workspace:*",
     "@packages/users": "workspace:*",
     "rxjs": "^7.8.2"
   },
