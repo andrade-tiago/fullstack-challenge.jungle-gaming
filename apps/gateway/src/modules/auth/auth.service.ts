@@ -3,10 +3,10 @@ import { ClientProxy } from '@nestjs/microservices'
 import { AUTH_CLIENT } from '../clients/clients/auth.client'
 import { firstValueFrom } from 'rxjs'
 import type {
-  LoginRequestDTO,
-  LoginResponseDTO,
-  RefreshLoginRequestDTO,
-  RefreshLoginResponseDTO } from '@packages/users'
+  LoginCommandDTO,
+  LoginCommandResponseDTO, 
+  RefreshLoginCommandDTO,
+  RefreshLoginCommandResponseDTO } from '@packages/users'
 
 @Injectable()
 export class AuthService {
@@ -15,22 +15,20 @@ export class AuthService {
     private readonly _usersClient: ClientProxy,
   ) {}
 
-  async login(credentials: LoginRequestDTO)
-    : Promise<LoginResponseDTO>
+  async login(credentials: LoginCommandDTO)
+    : Promise<LoginCommandResponseDTO>
   {
     const login$ = this._usersClient
-      .send<LoginResponseDTO>({ cmd: 'auth.login' }, credentials)
+      .send<LoginCommandResponseDTO>({ cmd: 'auth.login' }, credentials)
     
     return firstValueFrom(login$)
   }
 
-  async refresh(refreshToken: string)
-    : Promise<RefreshLoginResponseDTO>
+  async refresh(command: RefreshLoginCommandDTO)
+    : Promise<RefreshLoginCommandResponseDTO>
   {
     const refreshLogin$ = this._usersClient
-      .send<RefreshLoginResponseDTO, RefreshLoginRequestDTO>(
-        { cmd: 'auth.refresh' },
-        { refreshToken })
+      .send<RefreshLoginCommandResponseDTO>({ cmd: 'auth.refresh' }, command)
 
     return firstValueFrom(refreshLogin$)
   }

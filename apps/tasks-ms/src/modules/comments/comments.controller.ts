@@ -3,10 +3,10 @@ import { MessagePattern, Payload } from '@nestjs/microservices'
 import { CommentsService } from './comments.service'
 import {
   CreateCommentCommandDTO,
-  CreateCommentResponseDTO,
+  CreateCommentCommandResponseDTO,
 } from '@packages/tasks'
 
-@Controller('')
+@Controller()
 export class CommentsController {
   constructor(
     private readonly _commentsService: CommentsService,
@@ -14,7 +14,7 @@ export class CommentsController {
 
   @MessagePattern({ cmd: 'comments.create' })
   async create(@Payload() commentData: CreateCommentCommandDTO)
-    : Promise<CreateCommentResponseDTO>
+    : Promise<CreateCommentCommandResponseDTO>
   {
     const id = await this._commentsService.create(commentData)
 

@@ -1,8 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
-import { CreateUserRequestDTO, type CreateUserResponseDTO } from '@packages/users'
 import { AUTH_CLIENT } from '../clients/clients/auth.client'
-import { type Observable } from 'rxjs'
+import { firstValueFrom } from 'rxjs'
+import type {
+  CreateUserCommandDTO,
+  CreateUserCommandResponseDTO } from '@packages/users'
 
 @Injectable()
 export class UsersService {
@@ -11,10 +13,12 @@ export class UsersService {
     private readonly _usersClient: ClientProxy,
   ) {}
 
-  create(userData: CreateUserRequestDTO): Observable<CreateUserResponseDTO> {
+  public async create(dto: CreateUserCommandDTO)
+    : Promise<CreateUserCommandResponseDTO>
+  {
     const createUser$ = this._usersClient
-      .send<CreateUserResponseDTO>({ cmd: 'users.create' }, userData)
+      .send<CreateUserCommandResponseDTO>({ cmd: 'users.create' }, dto)
 
-    return createUser$
+    return firstValueFrom(createUser$)
   }
 }

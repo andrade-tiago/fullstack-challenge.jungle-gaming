@@ -1,18 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsEmail, IsString } from 'class-validator'
+import { LoginCommandDTO } from './login-command.dto'
 
-export class LoginRequestDTO {
-  @ApiProperty({
-    example: 'Foobar#1234',
-    description: 'User passowrd',
-  })
-  @IsString()
-  password!: string
-
+export class LoginRequestDTO extends LoginCommandDTO {
   @ApiProperty({
     example: 'foobar@email.com',
     description: 'User email address',
   })
-  @IsEmail()
-  email!: string
+  declare email: string
+
+  @ApiProperty({
+    example: 'Foobar#1234',
+    description: 'User passowrd',
+  })
+  declare password: string
 }

@@ -19,14 +19,13 @@ export class CommentsService {
     private readonly _usersService: UsersService,
   ) {}
 
-  async create(commentData: CreateCommentCommandDTO)
+  async create(dto: CreateCommentCommandDTO)
     : Promise<Comment['id']>
   {
-    await this._usersService
-      .throwIfAnyUserIdIsInvalid([ commentData.userId ])
+    await this._usersService.throwIfAnyUserIdIsInvalid([ dto.userId ])
 
     const taskExists = await this._tasksRepository
-      .existsBy({ id: commentData.taskId })
+      .existsBy({ id: dto.taskId })
 
     if (!taskExists) {
       throw new AppRpcException({
@@ -36,9 +35,9 @@ export class CommentsService {
     }
 
     const newTask = this._commentsRepository.create({
-      task: { id: commentData.taskId },
-      content: commentData.content,
-      userId: commentData.userId,
+      task: { id: dto.taskId },
+      content: dto.content,
+      userId: dto.userId,
     })
 
     const createdComment = await this._commentsRepository.save(newTask)

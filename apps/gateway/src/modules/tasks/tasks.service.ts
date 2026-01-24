@@ -2,15 +2,15 @@ import { Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 import { TASKS_CLIENT } from '../clients/clients/tasks.client'
 import { firstValueFrom, lastValueFrom } from 'rxjs'
-import type {
-  TaskPublicDTO,
-  CreateTaskCommandDTO, 
-  CreateTaskResponseDTO,
-  GetTaskByIdQueryDTO,
-  GetTasksPagedQueryDTO, 
-  UpdateTaskCommandDTO,
-  DeleteTaskCommandDTO} from '@packages/tasks'
 import type { Pagination } from '@packages/types'
+import type {
+  CreateTaskCommandDTO,
+  CreateTaskCommandResponseDTO,
+  DeleteTaskCommandDTO,
+  GetTaskByIdQueryDTO,
+  GetTasksPagedQueryDTO,
+  TaskPublicDTO, 
+  UpdateTaskCommandDTO } from '@packages/tasks'
 
 @Injectable()
 export class TasksService {
@@ -19,51 +19,49 @@ export class TasksService {
     private readonly _tasksClient: ClientProxy,
   ) {}
 
-  async create(taskData: CreateTaskCommandDTO)
+  async create(dto: CreateTaskCommandDTO)
     : Promise<TaskPublicDTO['id']>
   {
     const createTask$ = this._tasksClient
-      .send<CreateTaskResponseDTO>({ cmd: 'tasks.create' }, taskData)
+      .send<CreateTaskCommandResponseDTO>({ cmd: 'tasks.create' }, dto)
 
     const createTaskResponse = await firstValueFrom(createTask$)
 
     return createTaskResponse.id
   }
 
-  async getById(id: TaskPublicDTO['id'])
+  async getById(dto: GetTaskByIdQueryDTO)
     : Promise<TaskPublicDTO>
   {
     const getTaskById$ = this._tasksClient
-      .send<TaskPublicDTO, GetTaskByIdQueryDTO>(
-        { cmd: 'tasks.get-by-id' },
-        { id })
+      .send<TaskPublicDTO>({ cmd: 'tasks.get-by-id' }, dto)
     
     return firstValueFrom(getTaskById$)
   }
 
-  async getPaged(query: GetTasksPagedQueryDTO)
+  async getPaged(dto: GetTasksPagedQueryDTO)
     : Promise<Pagination<TaskPublicDTO>>
   {
     const getTasksPaged$ = this._tasksClient
-      .send<Pagination<TaskPublicDTO>>({ cmd: 'tasks.get-paged' }, query)
+      .send<Pagination<TaskPublicDTO>>({ cmd: 'tasks.get-paged' }, dto)
     
     return firstValueFrom(getTasksPaged$)
   }
 
-  async update(command: UpdateTaskCommandDTO)
+  async update(dto: UpdateTaskCommandDTO)
     : Promise<TaskPublicDTO>
   {
     const updateTask$ = this._tasksClient
-      .send<TaskPublicDTO>({ cmd: 'tasks.update' }, command)
+      .send<TaskPublicDTO>({ cmd: 'tasks.update' }, dto)
 
     return firstValueFrom(updateTask$)
   }
 
-  async delete(command: DeleteTaskCommandDTO)
+  async delete(dto: DeleteTaskCommandDTO)
     : Promise<void>
   {
     const deleteTask$ = this._tasksClient
-      .send<void>({ cmd: 'tasks.delete' }, command)
+      .send<void>({ cmd: 'tasks.delete' }, dto)
 
     lastValueFrom(deleteTask$, { defaultValue: undefined })
   }

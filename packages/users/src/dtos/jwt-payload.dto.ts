@@ -1,5 +1,5 @@
 export type JwtPayloadDTO = {
-  id: string
+  sub: string
   username: string
   email: string
 }

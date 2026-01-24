@@ -5,10 +5,12 @@ import {
   HttpStatus,
   Post } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
-import { CreateUserRequestDTO } from '@packages/users'
 import { UsersService } from './users.service'
 import { ApiCreateUser } from './decorators/api'
 import { ApiCommonErrors } from '@/api/decorators'
+import {
+  CreateUserRequestDTO,
+  CreateUserResponseDTO } from '@packages/users'
 
 @ApiTags('Users')
 @ApiCommonErrors()
@@ -19,9 +21,10 @@ export class UsersController {
   ) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
   @ApiCreateUser()
-  create(@Body() userData: CreateUserRequestDTO) {
-    return this._usersService.create(userData)
+  async create(@Body() dto: CreateUserRequestDTO)
+    : Promise<CreateUserResponseDTO>
+  {
+    return this._usersService.create({ ...dto })
   }
 }

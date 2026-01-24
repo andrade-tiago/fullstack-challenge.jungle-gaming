@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { CreateUserCommandResponseDTO } from './create-user-command-response.dto'
 
-export class CreateUserResponseDTO {
-  @ApiProperty({
-    example: '50a26655-9093-4319-abdc-d48884d2dd66',
-  })
-  id!: string
+export class CreateUserResponseDTO extends CreateUserCommandResponseDTO {
+  @ApiProperty()
+  declare id: string
 }

@@ -11,10 +11,11 @@ import {
   AppRpcException,
   AppRpcExceptionType } from '@packages/microservices'
 import type {
-  JwtPayloadDTO,
-  LoginRequestDTO, 
-  LoginResponseDTO, 
-  RefreshLoginResponseDTO } from '@packages/users'
+  JwtPayloadDTO, 
+  LoginCommandDTO,
+  LoginCommandResponseDTO,
+  RefreshLoginCommandDTO,
+  RefreshLoginCommandResponseDTO } from '@packages/users'
 import type { JwtEnv } from '@/config/envs/jwt.env'
 
 @Injectable()
@@ -30,8 +31,8 @@ export class AuthService {
     private readonly _jwtService: JwtService,
   ) {}
 
-  public async login({ email, password }: LoginRequestDTO)
-    : Promise<LoginResponseDTO>
+  public async login({ email, password }: LoginCommandDTO)
+    : Promise<LoginCommandResponseDTO>
   {
     const user = await this._usersRepository.findOneBy({ email })
     if (!user) this._throwInvalidCredentials()
@@ -45,19 +46,20 @@ export class AuthService {
     return { accessToken, refreshToken }
   }
 
-  public async refresh(token: string)
-    : Promise<RefreshLoginResponseDTO>
+  public async refresh({ refreshToken }: RefreshLoginCommandDTO)
+    : Promise<RefreshLoginCommandResponseDTO>
   {
     const secret = this._jwtConfig.refreshSecret
 
     try {
-      const payload = this._jwtService.verify<JwtPayloadDTO>(token, { secret })
+      const payload = this._jwtService
+        .verify<JwtPayloadDTO>(refreshToken, { secret })
 
-      const user = await this._usersRepository.findOneBy({ id: payload.id })
+      const user = await this._usersRepository.findOneBy({ id: payload.sub })
       if (!user)
         throw new AppRpcException({
           type: AppRpcExceptionType.NotFound,
-          message: 'User not found.' })
+          message: 'User not found' })
 
       const accessToken = this._generateAccessToken(user)
 
@@ -68,7 +70,7 @@ export class AuthService {
 
       throw new AppRpcException({
         type: AppRpcExceptionType.Unauthorized,
-        message: 'Invalid or expired refresh token.',
+        message: 'Invalid or expired refresh token',
       })
     }
   }
@@ -78,7 +80,7 @@ export class AuthService {
     const expiresIn = this._jwtConfig.accessExpiration
 
     const payload: JwtPayloadDTO = {
-      id: user.id,
+      sub: user.id,
       username: user.username,
       email: user.email,  
     }
@@ -104,7 +106,7 @@ export class AuthService {
   private _throwInvalidCredentials(): never {
     throw new AppRpcException({
       type: AppRpcExceptionType.Unauthorized,
-      message: 'Invalid credentials.'
+      message: 'Invalid credentials'
     })
   }
 }

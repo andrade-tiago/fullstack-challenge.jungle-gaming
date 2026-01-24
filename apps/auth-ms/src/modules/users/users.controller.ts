@@ -1,11 +1,11 @@
-import { Controller, Logger } from '@nestjs/common'
+import { Controller } from '@nestjs/common'
 import { MessagePattern, Payload } from '@nestjs/microservices'
 import { UsersService } from './users.service'
 import {
-  CreateUserRequestDTO,
-  type CreateUserResponseDTO,
+  CreateUserCommandDTO,
+  CreateUserCommandResponseDTO,
   ExistUsersQueryDTO,
-  type ExistUsersQueryResponseDTO,
+  ExistUsersQueryResponseDTO,
 } from '@packages/users'
 
 @Controller('users')
@@ -15,10 +15,10 @@ export class UsersController {
   ) {}
 
   @MessagePattern({ cmd: 'users.create' })
-  async create(@Payload() userData: CreateUserRequestDTO)
-    : Promise<CreateUserResponseDTO>
+  async create(@Payload() dto: CreateUserCommandDTO)
+    : Promise<CreateUserCommandResponseDTO>
   {
-    const id = await this._usersService.create(userData)
+    const id = await this._usersService.create(dto)
 
     return { id }
   }

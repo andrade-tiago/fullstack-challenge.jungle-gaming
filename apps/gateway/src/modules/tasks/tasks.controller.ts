@@ -11,12 +11,6 @@ import {
   Post,
   Query, 
   UseGuards } from '@nestjs/common'
-import {
-  CreateTaskCommandDTO,
-  CreateTaskResponseDTO,
-  GetTasksPagedQueryDTO,
-  TaskPublicDTO,
-  UpdateTaskDTO } from '@packages/tasks'
 import { TasksService } from './tasks.service'
 import { ApiTags } from '@nestjs/swagger'
 import {
@@ -27,6 +21,12 @@ import {
   ApiUpdateTask } from './decorators/api'
 import { JwtAuthGuard } from '../auth/guards/jwt.guard'
 import { ApiCommonErrors } from '@/api/decorators'
+import {
+  CreateTaskRequestDTO,
+  CreateTaskResponseDTO, 
+  GetTasksPagedRequestDTO, 
+  TaskPublicDTO, 
+  UpdateTaskRequestDTO } from '@packages/tasks'
 import type { Pagination } from '@packages/types'
 
 @ApiTags('Tasks')
@@ -39,37 +39,36 @@ export class TasksController {
   ) {}
 
   @Post()
-  @HttpCode(HttpStatus.CREATED)
   @ApiCreateTask()
-  async create(@Body() taskData: CreateTaskCommandDTO)
+  async create(@Body() dto: CreateTaskRequestDTO)
     : Promise<CreateTaskResponseDTO>
   {
-    const id = await this._tasksService.create(taskData)
+    const id = await this._tasksService.create({ ...dto })
     return { id }
   }
 
   @Get(':id')
   @ApiGetTaskById()
   async getById(
-    @Param('id', ParseUUIDPipe) id: TaskPublicDTO['id'],
+    @Param('id', ParseUUIDPipe) id: string,
   ) : Promise<TaskPublicDTO>
   {
-    return this._tasksService.getById(id)
+    return this._tasksService.getById({ id })
   }
 
   @Get()
   @ApiGetTasksPaged()
-  async getPaged(@Query() query: GetTasksPagedQueryDTO)
+  async getPaged(@Query() dto: GetTasksPagedRequestDTO)
     : Promise<Pagination<TaskPublicDTO>>
   {
-    return this._tasksService.getPaged(query)
+    return this._tasksService.getPaged({ ...dto })
   }
 
   @Patch(':id')
   @ApiUpdateTask()
   async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() dto: UpdateTaskDTO,
+    @Body() dto: UpdateTaskRequestDTO,
   ) : Promise<TaskPublicDTO>
   {
     return this._tasksService.update({ id, ...dto })

@@ -1,31 +1,18 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { Type } from 'class-transformer'
 import { IsInt, IsNumber, Max, Min } from 'class-validator'
 
-const DEFAULT_PAGE_SIZE = 10
-const DEFAULT_PAGE_NUMBER = 1
-
 export class PaginationQuery {
-  @ApiProperty({
-    example: DEFAULT_PAGE_SIZE,
-    default: DEFAULT_PAGE_SIZE,
-    description: 'Maximum number of items per page',
-  })
-  @Type(() => Number)
-  @IsNumber()
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  pageSize: number = DEFAULT_PAGE_SIZE
+  private static readonly PAGE_SIZE_MIN = 1
+  private static readonly PAGE_SIZE_MAX = 100
+  private static readonly PAGE_NUMBER_MIN = 1
 
-  @ApiProperty({
-    example: DEFAULT_PAGE_NUMBER,
-    default: DEFAULT_PAGE_NUMBER,
-    description: 'Number of page',
-  })
-  @Type(() => Number)
   @IsNumber()
   @IsInt()
-  @Min(1)
-  pageNumber: number = DEFAULT_PAGE_NUMBER
+  @Min(PaginationQuery.PAGE_SIZE_MIN)
+  @Max(PaginationQuery.PAGE_SIZE_MAX)
+  pageSize!: number
+
+  @IsNumber()
+  @IsInt()
+  @Min(PaginationQuery.PAGE_NUMBER_MIN)
+  pageNumber!: number
 }

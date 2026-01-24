@@ -11,6 +11,8 @@ import {
 import { UsersService } from '../users/users.service'
 import type {
   CreateTaskCommandDTO,
+  DeleteTaskCommandDTO,
+  GetTaskByIdQueryDTO,
   GetTasksPagedQueryDTO,
   TaskPublicDTO,
   UpdateTaskCommandDTO } from '@packages/tasks'
@@ -29,7 +31,7 @@ export class TasksService {
   ) {}
 
   public async create(dto: CreateTaskCommandDTO)
-    : Promise<Task['id']>
+    : Promise<TaskPublicDTO['id']>
   {
     await this._usersService.throwIfAnyUserIdIsInvalid(dto.userIds)
 
@@ -49,7 +51,7 @@ export class TasksService {
     return createdTask.id
   }
 
-  public async getById(id: Task['id'])
+  public async getById({ id }: GetTaskByIdQueryDTO)
     : Promise<TaskPublicDTO>
   {
     const task = await this._tasksRepository.findOneBy({ id })
@@ -63,11 +65,11 @@ export class TasksService {
     return this._tasksMapper.toPublicDTO(task)
   }
 
-  public async getPaged(query: GetTasksPagedQueryDTO)
+  public async getPaged(dto: GetTasksPagedQueryDTO)
     : Promise<Pagination<TaskPublicDTO>>
   {
-    const takeCount = query.pageSize
-    const skipCount = (query.pageNumber - 1) * takeCount
+    const takeCount = dto.pageSize
+    const skipCount = (dto.pageNumber - 1) * takeCount
 
     const [tasks, tasksTotalCount] = await Promise.all([
       this._tasksRepository.find({
@@ -80,8 +82,8 @@ export class TasksService {
 
     return new Pagination({
       data: taskPublics,
-      pageNumber: query.pageNumber,
-      pageSize: query.pageSize,
+      pageNumber: dto.pageNumber,
+      pageSize: dto.pageSize,
       totalCount: tasksTotalCount,
     })
   }
@@ -104,7 +106,7 @@ export class TasksService {
     return this._tasksMapper.toPublicDTO(savedTask)
   }
 
-  public async delete(id: Task['id'])
+  public async delete({ id }: DeleteTaskCommandDTO)
     : Promise<void>
   {
     const result = await this._tasksRepository.delete(id)

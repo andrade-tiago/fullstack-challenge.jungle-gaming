@@ -1,5 +1,9 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger'
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse } from '@nestjs/swagger'
 
 export function ApiDeleteTask() {
   return applyDecorators(

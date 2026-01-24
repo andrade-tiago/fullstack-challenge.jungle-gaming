@@ -8,12 +8,6 @@ import {
   UseGuards } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
-import {
-  AuthenticatedUser,
-  LoginRequestDTO,
-  LoginResponseDTO, 
-  RefreshLoginRequestDTO,
-  RefreshLoginResponseDTO } from '@packages/users'
 import { JwtAuthGuard } from './guards/jwt.guard'
 import { CurrentUser } from './decorators/current-user.decorator'
 import {
@@ -21,6 +15,12 @@ import {
   ApiLogin,
   ApiRefreshLogin } from './decorators/api'
 import { ApiCommonErrors } from '@/api/decorators'
+import {
+  AuthenticatedUser,
+  LoginRequestDTO,
+  LoginResponseDTO,
+  RefreshLoginRequestDTO,
+  RefreshLoginResponseDTO } from '@packages/users'
 
 @ApiTags('Auth')
 @ApiCommonErrors()
@@ -33,19 +33,19 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiLogin()
-  async login(@Body() credentials: LoginRequestDTO)
+  async login(@Body() { email, password }: LoginRequestDTO)
     : Promise<LoginResponseDTO>
   {
-    return this._authService.login(credentials)
+    return this._authService.login({ email, password })
   }
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiRefreshLogin()
-  async refresh(@Body() credentials: RefreshLoginRequestDTO)
+  async refresh(@Body() { refreshToken }: RefreshLoginRequestDTO)
     : Promise<RefreshLoginResponseDTO>
   {
-    return this._authService.refresh(credentials.refreshToken)
+    return this._authService.refresh({ refreshToken })
   }
 
   @Get('me')

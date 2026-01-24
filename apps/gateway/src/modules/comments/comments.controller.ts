@@ -10,9 +10,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard'
 import { CommentsService } from './comments.service'
 import { ApiCreateComment } from './decorators/api'
 import {
-  CreateCommentDTO,
+  CreateCommentRequestDTO,
   CreateCommentResponseDTO } from '@packages/tasks'
 import { ApiCommonErrors } from '@/api/decorators'
+import { CurrentUser } from '../auth/decorators/current-user.decorator'
 
 @ApiTags('Comments')
 @ApiCommonErrors()
@@ -23,14 +24,15 @@ export class CommentsController {
     private readonly _commentsService: CommentsService,
   ) {}
 
-  @Post('/tasks/:id/comments')
+  @Post('tasks/:id/comments')
   @ApiCreateComment()
   async create(
-    @Param('id', ParseUUIDPipe) taskId: string, 
-    @Body() dto: CreateCommentDTO,
+    @Param('id', ParseUUIDPipe) taskId: string,
+    @CurrentUser('id') userId: string,
+    @Body() dto: CreateCommentRequestDTO,
   ) : Promise<CreateCommentResponseDTO>
   {
-    const id = await this._commentsService.create({ taskId, ...dto })
+    const id = await this._commentsService.create({ taskId, userId, ...dto })
 
     return { id }
   }

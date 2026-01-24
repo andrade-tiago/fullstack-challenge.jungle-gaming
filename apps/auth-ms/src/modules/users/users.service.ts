@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import type {
-  CreateUserRequestDTO,
-  ExistUsersQueryDTO,
-  ExistUsersQueryResponseDTO } from '@packages/users'
 import { In, Repository } from 'typeorm'
 import { PasswordService } from '../common/password.service'
 import { User } from '@/entities/user.entity'
 import {
   AppRpcException,
   AppRpcExceptionType } from '@packages/microservices'
+import type {
+  CreateUserCommandDTO,
+  ExistUsersQueryDTO,
+  ExistUsersQueryResponseDTO } from '@packages/users'
 
 @Injectable()
 export class UsersService {
@@ -20,7 +20,7 @@ export class UsersService {
     private readonly _passwordService: PasswordService,
   ) {}
 
-  async create(dto: CreateUserRequestDTO): Promise<User['id']> {
+  async create(dto: CreateUserCommandDTO): Promise<User['id']> {
     await this._throwIfAnUserWithEmailAlreadyExists(dto.email)
 
     const passwordHash = await this._passwordService.hash(dto.password)

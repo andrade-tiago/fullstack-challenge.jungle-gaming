@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { CreateCommentCommandResponseDTO } from './create-comment-command-response.dto'
 
-export class CreateCommentResponseDTO {
+export class CreateCommentResponseDTO extends CreateCommentCommandResponseDTO {
   @ApiProperty()
-  id!: string
+  declare id: string
 }

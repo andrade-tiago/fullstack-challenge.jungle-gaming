@@ -1,8 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 import { TASKS_CLIENT } from '../clients/clients/tasks.client'
-import { CommentPublicDTO, CreateCommentCommandDTO, CreateCommentResponseDTO } from '@packages/tasks'
 import { firstValueFrom } from 'rxjs'
+import {
+  CommentPublicDTO,
+  CreateCommentCommandDTO,
+  CreateCommentCommandResponseDTO } from '@packages/tasks'
 
 @Injectable()
 export class CommentsService {
@@ -11,11 +14,11 @@ export class CommentsService {
     private readonly _tasksClient: ClientProxy,
   ) {}
 
-  public async create(command: CreateCommentCommandDTO)
+  public async create(dto: CreateCommentCommandDTO)
     : Promise<CommentPublicDTO['id']>
   {
     const createTaskComment$ = this._tasksClient
-      .send<CreateCommentResponseDTO>({ cmd: 'comments.create' }, command)
+      .send<CreateCommentCommandResponseDTO>({ cmd: 'comments.create' }, dto)
 
     const result = await firstValueFrom(createTaskComment$)
 

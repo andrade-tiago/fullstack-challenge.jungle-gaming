@@ -2,10 +2,10 @@ import { Controller } from '@nestjs/common'
 import { MessagePattern, Payload } from '@nestjs/microservices'
 import { AuthService } from './auth.service'
 import {
-  LoginRequestDTO,
-  LoginResponseDTO,
-  RefreshLoginRequestDTO, 
-  RefreshLoginResponseDTO } from '@packages/users'
+  LoginCommandDTO,
+  LoginCommandResponseDTO,
+  RefreshLoginCommandDTO, 
+  RefreshLoginCommandResponseDTO } from '@packages/users'
 
 @Controller('auth')
 export class AuthController {
@@ -14,16 +14,16 @@ export class AuthController {
   ) {}
 
   @MessagePattern({ cmd: 'auth.login' })
-  async login(@Payload() credentials: LoginRequestDTO)
-    : Promise<LoginResponseDTO>
+  async login(@Payload() credentials: LoginCommandDTO)
+    : Promise<LoginCommandResponseDTO>
   {
     return this._authService.login(credentials)
   }
 
   @MessagePattern({ cmd: 'auth.refresh' })
-  async refresh(@Payload() credentials: RefreshLoginRequestDTO)
-    : Promise<RefreshLoginResponseDTO>
+  async refresh(@Payload() credentials: RefreshLoginCommandDTO)
+    : Promise<RefreshLoginCommandResponseDTO>
   {
-    return this._authService.refresh(credentials.refreshToken)
+    return this._authService.refresh(credentials)
   }
 }

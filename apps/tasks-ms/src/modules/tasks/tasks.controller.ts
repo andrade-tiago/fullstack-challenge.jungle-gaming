@@ -3,12 +3,12 @@ import { MessagePattern, Payload } from '@nestjs/microservices'
 import { TasksService } from './tasks.service'
 import {
   CreateTaskCommandDTO,
-  CreateTaskResponseDTO,
+  CreateTaskCommandResponseDTO,
   DeleteTaskCommandDTO,
   GetTaskByIdQueryDTO,
   GetTasksPagedQueryDTO,
   TaskPublicDTO, 
-  UpdateTaskCommandDTO} from '@packages/tasks'
+  UpdateTaskCommandDTO } from '@packages/tasks'
 import type { Pagination } from '@packages/types'
 
 @Controller()
@@ -19,24 +19,24 @@ export class TasksController {
 
   @MessagePattern({ cmd: 'tasks.create' })
   async create(@Payload() taskData: CreateTaskCommandDTO)
-    : Promise<CreateTaskResponseDTO>
+    : Promise<CreateTaskCommandResponseDTO>
   {
     const id = await this._tasksService.create(taskData)
     return { id }
   }
 
   @MessagePattern({ cmd: 'tasks.get-by-id' })
-  async getById(@Payload() query: GetTaskByIdQueryDTO)
+  async getById(@Payload() { id }: GetTaskByIdQueryDTO)
     : Promise<TaskPublicDTO>
   {
-    return this._tasksService.getById(query.id)
+    return this._tasksService.getById({ id })
   }
 
   @MessagePattern({ cmd: 'tasks.get-paged' })
-  async getPaged(@Payload() query: GetTasksPagedQueryDTO)
+  async getPaged(@Payload() dto: GetTasksPagedQueryDTO)
     : Promise<Pagination<TaskPublicDTO>>
   {
-    return this._tasksService.getPaged(query)
+    return this._tasksService.getPaged({ ...dto })
   }
 
   @MessagePattern({ cmd: 'tasks.update' })
@@ -47,9 +47,9 @@ export class TasksController {
   }
 
   @MessagePattern({ cmd: 'tasks.delete' })
-  async delete(@Payload() command: DeleteTaskCommandDTO)
+  async delete(@Payload() { id }: DeleteTaskCommandDTO)
     : Promise<void>
   {
-    return this._tasksService.delete(command.id)
+    return this._tasksService.delete({ id })
   }
 }
