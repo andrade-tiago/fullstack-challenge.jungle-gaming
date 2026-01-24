@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { Comment } from '../../entities/comment.entity'
-import { Task } from '../../entities/task.entity'
+import { Comment } from '@/entities/comment.entity'
+import { Task } from '@/entities/task.entity'
 import { UsersService } from '../users/users.service'
 import { AppRpcException, AppRpcExceptionType } from '@packages/microservices'
 import type { CreateCommentCommandDTO } from '@packages/tasks'
@@ -31,7 +31,7 @@ export class CommentsService {
     if (!taskExists) {
       throw new AppRpcException({
         type: AppRpcExceptionType.NotFound,
-        message: 'Task not found.',
+        message: 'Task with ID not found.',
       })
     }
 

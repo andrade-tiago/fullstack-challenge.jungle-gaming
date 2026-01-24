@@ -1,3 +1,6 @@
-export type CreateCommentResponseDTO = {
-  id: string
+import { ApiProperty } from '@nestjs/swagger'
+
+export class CreateCommentResponseDTO {
+  @ApiProperty()
+  id!: string
 }

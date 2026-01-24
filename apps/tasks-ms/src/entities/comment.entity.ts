@@ -4,7 +4,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn } from 'typeorm'
 import { Task } from './task.entity'
-import { CommentsContants } from '@packages/tasks'
+import { CommentsConstants } from '@packages/tasks'
 
 @Entity('comments')
 export class Comment
@@ -16,7 +16,7 @@ export class Comment
   userId!: string
 
   @Column('varchar', { name: 'comment_content',
-    length: CommentsContants.COMMENT_CONTENT_MAX_LENGTH,
+    length: CommentsConstants.COMMENT_CONTENT_MAX_LENGTH,
   })
   content!: string
 

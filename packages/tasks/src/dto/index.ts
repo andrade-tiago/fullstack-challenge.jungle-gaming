@@ -1,5 +1,7 @@
+export * from './comment-public.dto'
 export * from './create-comment-command.dto'
 export * from './create-comment-response.dto'
+export * from './create-comment.dto'
 export * from './create-task-command.dto'
 export * from './create-task-response.dto'
 export * from './delete-task-command.dto'
