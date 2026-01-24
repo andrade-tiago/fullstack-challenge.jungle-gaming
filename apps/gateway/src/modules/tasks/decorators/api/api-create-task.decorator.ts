@@ -18,9 +18,5 @@ export function ApiCreateTask() {
       status: HttpStatus.CONFLICT,
       description: 'User with same email or username already exists',
     }),
-    ApiResponse({
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      description: 'Internal server error',
-    }),
   )
 }

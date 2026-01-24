@@ -21,9 +21,5 @@ export function ApiGetAuthenticatedUser() {
       status: HttpStatus.UNAUTHORIZED,
       description: 'Non-existent or invalid token',
     }),
-    ApiResponse({
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      description: 'Internal server error',
-    }),
   )
 }

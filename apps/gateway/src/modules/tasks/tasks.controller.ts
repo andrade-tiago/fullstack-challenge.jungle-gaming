@@ -26,10 +26,12 @@ import {
   ApiGetTasksPaged, 
   ApiUpdateTask } from './decorators/api'
 import { JwtAuthGuard } from '../auth/guards/jwt.guard'
+import { ApiCommonErrors } from '@/api/decorators'
 import type { Pagination } from '@packages/types'
 
-@UseGuards(JwtAuthGuard)
 @ApiTags('Tasks')
+@ApiCommonErrors()
+@UseGuards(JwtAuthGuard)
 @Controller('tasks')
 export class TasksController {
   constructor(

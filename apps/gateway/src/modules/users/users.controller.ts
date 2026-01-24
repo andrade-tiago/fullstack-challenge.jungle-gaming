@@ -8,8 +8,10 @@ import { ApiTags } from '@nestjs/swagger'
 import { CreateUserRequestDTO } from '@packages/users'
 import { UsersService } from './users.service'
 import { ApiCreateUser } from './decorators/api'
+import { ApiCommonErrors } from '@/api/decorators'
 
 @ApiTags('Users')
+@ApiCommonErrors()
 @Controller('users')
 export class UsersController {
   constructor(

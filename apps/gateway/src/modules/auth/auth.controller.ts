@@ -20,8 +20,10 @@ import {
   ApiGetAuthenticatedUser,
   ApiLogin,
   ApiRefreshLogin } from './decorators/api'
+import { ApiCommonErrors } from '@/api/decorators'
 
 @ApiTags('Auth')
+@ApiCommonErrors()
 @Controller('auth')
 export class AuthController {
   constructor(

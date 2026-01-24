@@ -21,9 +21,5 @@ export function ApiDeleteTask() {
       status: HttpStatus.NOT_FOUND,
       description: 'Task not found',
     }),
-    ApiResponse({
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      description: 'Internal server error',
-    }),
   )
 }

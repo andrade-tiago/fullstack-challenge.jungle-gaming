@@ -12,8 +12,10 @@ import { ApiCreateComment } from './decorators/api'
 import {
   CreateCommentDTO,
   CreateCommentResponseDTO } from '@packages/tasks'
+import { ApiCommonErrors } from '@/api/decorators'
 
 @ApiTags('Comments')
+@ApiCommonErrors()
 @UseGuards(JwtAuthGuard)
 @Controller()
 export class CommentsController {

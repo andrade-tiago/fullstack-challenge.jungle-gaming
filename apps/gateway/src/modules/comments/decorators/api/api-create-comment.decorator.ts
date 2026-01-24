@@ -27,10 +27,6 @@ export function ApiCreateComment() {
     ApiResponse({
       status: HttpStatus.NOT_FOUND,
       description: 'Task or user not found',
-    }),
-    ApiResponse({
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      description: 'Internal server error',
-    }),
+    })
   )
 }
