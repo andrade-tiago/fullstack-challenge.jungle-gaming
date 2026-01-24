@@ -5,19 +5,19 @@ import {
   Matches,
   MaxLength,
   MinLength } from 'class-validator'
-import { UsersContants } from '../constants'
+import { UsersConstants } from '../constants'
 import { ApiProperty } from '@nestjs/swagger'
 
 export class CreateUserRequestDTO {
   @ApiProperty({
-    example: 'FooBar_10',
-    description: 'Unique username to identify the user',
+    example: 'Foo Bar',
+    description: 'User full name',
   })
   @IsString()
-  @MinLength(UsersContants.USERS_USERNAME_MIN_LENGTH)
-  @MaxLength(UsersContants.USERS_USERNAME_MAX_LENGTH)
-  @Matches(/^[A-Za-z0-9\_\-]+$/, {
-    message: 'filed must contain only uppercase, lowercase, numbers and the symbols (_-)',
+  @MinLength(UsersConstants.USERS_USERNAME_MIN_LENGTH)
+  @MaxLength(UsersConstants.USERS_USERNAME_MAX_LENGTH)
+  @Matches(/^[A-Za-zÀ-ÖØ-öø-ÿ]+( [A-Za-zÀ-ÖØ-öø-ÿ]+)+$/, {
+    message: 'username must be a valid full name',
   })
   username!: string
 
@@ -32,8 +32,10 @@ export class CreateUserRequestDTO {
     example: 'A_s7rOng-Pa\$\$w0rd',
     description: 'Password with at least 8 and one uppercase, lowercase, digit and symbol characters',
   })
+  @MinLength(UsersConstants.USERS_PASSWORD_MIN_LENGTH)
+  @MaxLength(UsersConstants.USERS_PASSWORD_MAX_LENGTH)
   @IsStrongPassword({
-    minLength: UsersContants.USERS_PASSWORD_MIN_LENGTH,
+    minLength: UsersConstants.USERS_PASSWORD_MIN_LENGTH,
     minLowercase: 1,
     minNumbers: 1,
     minSymbols: 1,
@@ -42,6 +44,5 @@ export class CreateUserRequestDTO {
   {
     message: 'password must contain at least one uppercase, lowercase, digit and symbol characters',
   })
-  @MaxLength(UsersContants.USERS_PASSWORD_MAX_LENGTH)
   password!: string
 }

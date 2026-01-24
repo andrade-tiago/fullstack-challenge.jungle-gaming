@@ -3,7 +3,7 @@ import {
   Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { PasswordService } from '../common/password.service'
-import { User } from '../../entities/user.entity'
+import { User } from '@/entities/user.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { JWT_CONFIG } from './jwt.config'
@@ -30,31 +30,14 @@ export class AuthService {
     private readonly _jwtService: JwtService,
   ) {}
 
-  async login({ email, username, password }: LoginRequestDTO)
+  public async login({ email, password }: LoginRequestDTO)
     : Promise<LoginResponseDTO>
   {
-    let user: User | null = null
-
-    if (email) {
-      user = await this._usersRepository.findOneBy({ email })
-    }
-    else if (username) {
-      user = await this._usersRepository.findOneBy({ username })
-    }
-    else throw new AppRpcException({
-      type: AppRpcExceptionType.BadRequest,
-      message: 'Email or username required.' })
-
-    if (!user)
-      throw new AppRpcException({
-        type: AppRpcExceptionType.Unauthorized,
-        message: 'Invalid credentials.' })
+    const user = await this._usersRepository.findOneBy({ email })
+    if (!user) this._throwInvalidCredentials()
 
     const isValid = await this._passwordService.compare(password, user.password)
-    if (!isValid)
-      throw new AppRpcException({
-        type: AppRpcExceptionType.Unauthorized,
-        message: 'Invalid credentials.' })
+    if (!isValid) this._throwInvalidCredentials()
 
     const accessToken = this._generateAccessToken(user)
     const refreshToken = this._generateRefreshToken(user)
@@ -62,7 +45,7 @@ export class AuthService {
     return { accessToken, refreshToken }
   }
 
-  async refresh(token: string)
+  public async refresh(token: string)
     : Promise<RefreshLoginResponseDTO>
   {
     const secret = this._jwtConfig.refreshSecret
@@ -90,7 +73,7 @@ export class AuthService {
     }
   }
 
-  private _generateAccessToken(user: User) {
+  private _generateAccessToken(user: User): string {
     const secret = this._jwtConfig.accessSecret
     const expiresIn = this._jwtConfig.accessExpiration
 
@@ -106,7 +89,7 @@ export class AuthService {
     })
   }
 
-  private _generateRefreshToken(user: User) {
+  private _generateRefreshToken(user: User): string {
     const secret = this._jwtConfig.refreshSecret
     const expiresIn = this._jwtConfig.refreshExpiration
 
@@ -115,6 +98,13 @@ export class AuthService {
     }, {
       expiresIn,
       secret,
+    })
+  }
+
+  private _throwInvalidCredentials(): never {
+    throw new AppRpcException({
+      type: AppRpcExceptionType.Unauthorized,
+      message: 'Invalid credentials.'
     })
   }
 }

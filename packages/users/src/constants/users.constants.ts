@@ -1,5 +1,5 @@
 export const USERS_USERNAME_MIN_LENGTH = 2
-export const USERS_USERNAME_MAX_LENGTH = 16
+export const USERS_USERNAME_MAX_LENGTH = 40
 
 export const USERS_EMAIL_MAX_LENGTH = 255
 

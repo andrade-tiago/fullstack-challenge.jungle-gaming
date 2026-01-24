@@ -1,1 +1,1 @@
-export * as UsersContants from './users.constants'
+export * as UsersConstants from './users.constants'
