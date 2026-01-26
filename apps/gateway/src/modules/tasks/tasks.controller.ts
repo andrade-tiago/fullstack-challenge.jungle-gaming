@@ -28,6 +28,7 @@ import {
   TaskPublicDTO, 
   UpdateTaskRequestDTO } from '@packages/tasks'
 import type { Pagination } from '@packages/types'
+import { CurrentUser } from '../auth/decorators/current-user.decorator'
 
 @ApiTags('Tasks')
 @ApiCommonErrors()
@@ -40,10 +41,13 @@ export class TasksController {
 
   @Post()
   @ApiCreateTask()
-  async create(@Body() dto: CreateTaskRequestDTO)
+  async create(
+    @CurrentUser('id') userId: string,
+    @Body() dto: CreateTaskRequestDTO,
+  )
     : Promise<CreateTaskResponseDTO>
   {
-    const id = await this._tasksService.create({ ...dto })
+    const id = await this._tasksService.create({ ...dto, userId })
     return { id }
   }
 
@@ -67,20 +71,24 @@ export class TasksController {
   @Patch(':id')
   @ApiUpdateTask()
   async update(
+    @CurrentUser('id') userId: string,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateTaskRequestDTO,
-  ) : Promise<TaskPublicDTO>
+  )
+    : Promise<TaskPublicDTO>
   {
-    return this._tasksService.update({ id, ...dto })
+    return this._tasksService.update({ id, userId, ...dto })
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiDeleteTask()
   async delete(
+    @CurrentUser('id') userId: string,
     @Param('id', ParseUUIDPipe) id: string,
-  ) : Promise<void>
+  )
+    : Promise<void>
   {
-    return this._tasksService.delete({ id })
+    return this._tasksService.delete({ id, userId })
   }
 }

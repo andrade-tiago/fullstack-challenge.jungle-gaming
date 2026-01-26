@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty, OmitType } from '@nestjs/swagger'
 import { CreateTaskCommandDTO } from './create-task-command.dto'
 import { TaskPriority, TaskStatus } from '../enums'
 
@@ -8,7 +8,9 @@ const nextMonthDate = new Date(
   now.getMonth() + 1,
 )
 
-export class CreateTaskRequestDTO extends CreateTaskCommandDTO {
+export class CreateTaskRequestDTO
+  extends OmitType(CreateTaskCommandDTO, ['userId'])
+{
   @ApiProperty({
     example: 'Wash the dishes',
     description: 'Title of the task',

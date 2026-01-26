@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common'
 import { Repository } from 'typeorm'
-import { Task } from '@/entities/task.entity'
-import { TaskAssignment } from '@/entities/task-assignment.entity'
 import { InjectRepository } from '@nestjs/typeorm'
 import { TasksMapper } from './tasks.mapper'
 import { Pagination } from '@packages/types'
@@ -9,6 +7,7 @@ import {
   AppRpcException,
   AppRpcExceptionType } from '@packages/microservices'
 import { UsersService } from '../users/users.service'
+import { LogAction, Task, TaskAssignment } from '@/entities'
 import type {
   CreateTaskCommandDTO,
   DeleteTaskCommandDTO,
@@ -16,6 +15,7 @@ import type {
   GetTasksPagedQueryDTO,
   TaskPublicDTO,
   UpdateTaskCommandDTO } from '@packages/tasks'
+import { TaskLogsService } from './logs/task-logs.service'
 
 @Injectable()
 export class TasksService {
@@ -24,31 +24,38 @@ export class TasksService {
     private readonly _tasksRepository: Repository<Task>,
 
     @InjectRepository(TaskAssignment)
-    private readonly _taskAssignmentsRepository: Repository<TaskAssignment>,
+    private readonly _assignmentsRepository: Repository<TaskAssignment>,
 
     private readonly _tasksMapper: TasksMapper,
     private readonly _usersService: UsersService,
+    private readonly _taskLogsService: TaskLogsService,
   ) {}
 
-  public async create(dto: CreateTaskCommandDTO)
+  public async create({ userId, ...taskData }: CreateTaskCommandDTO)
     : Promise<TaskPublicDTO['id']>
   {
-    await this._usersService.throwIfAnyUserIdIsInvalid(dto.userIds)
+    await this._usersService.throwIfAnyUserIdIsInvalid(taskData.userIds)
 
     const newTask = this._tasksRepository.create({
-      title: dto.title,
-      description: dto.description,
-      priority: dto.priority,
-      status: dto.status,
-      deadline: dto.deadline,
+      title: taskData.title,
+      description: taskData.description,
+      priority: taskData.priority,
+      status: taskData.status,
+      deadline: taskData.deadline,
+    })
+    newTask.assignments = taskData.userIds.map(userId => 
+      this._assignmentsRepository.create({ userId })
+    )
+    await this._tasksRepository.save(newTask)
+
+    await this._taskLogsService.log({
+      action: LogAction.CREATE,
+      metadata: taskData,
+      taskId: newTask.id,
+      userId,
     })
 
-    newTask.assignments = dto.userIds.map(userId => 
-      this._taskAssignmentsRepository.create({ userId })
-    )
-
-    const createdTask = await this._tasksRepository.save(newTask)
-    return createdTask.id
+    return newTask.id
   }
 
   public async getById({ id }: GetTaskByIdQueryDTO)
@@ -88,11 +95,12 @@ export class TasksService {
     })
   }
 
-  public async update({ id, ...dto }: UpdateTaskCommandDTO)
+  public async update(
+    { id, userId, ...taskData }: UpdateTaskCommandDTO,
+  )
     : Promise<TaskPublicDTO>
   {
     const task = await this._tasksRepository.findOneBy({ id })
-
     if (!task) {
       throw new AppRpcException({
         type: AppRpcExceptionType.NotFound,
@@ -100,13 +108,20 @@ export class TasksService {
       })
     }
 
-    const updatedTask = this._tasksRepository.merge(task, dto)
-    const savedTask = await this._tasksRepository.save(updatedTask)
+    this._tasksRepository.merge(task, taskData)
+    await this._tasksRepository.save(task)
 
-    return this._tasksMapper.toPublicDTO(savedTask)
+    await this._taskLogsService.log({
+      action: LogAction.UPDATE,
+      taskId: id,
+      metadata: taskData,
+      userId,
+    })
+
+    return this._tasksMapper.toPublicDTO(task)
   }
 
-  public async delete({ id }: DeleteTaskCommandDTO)
+  public async delete({ id, userId }: DeleteTaskCommandDTO)
     : Promise<void>
   {
     const result = await this._tasksRepository.delete(id)
@@ -117,5 +132,11 @@ export class TasksService {
         message: 'Task with ID not found.',
       })
     }
+
+    await this._taskLogsService.log({
+      action: LogAction.DELETE,
+      taskId: id,
+      userId,
+    })
   }
 }

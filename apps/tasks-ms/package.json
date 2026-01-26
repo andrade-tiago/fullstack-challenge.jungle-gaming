@@ -8,9 +8,9 @@
     "dev": "pnpm ts-node-dev src/main.ts",
     "build": "nest build -p ./tsconfig.build.json",
     "start": "node dist/main.js",
-    "typeorm": "pnpm ts-node ./node_modules/typeorm/cli.js",
-    "mig:gen": "pnpm typeorm migration:generate -d src/database/data-source.ts",
-    "mig:rev": "pnpm typeorm migration:revert -d src/database/data-source.ts",
+    "typeorm": "pnpm ts-node ./node_modules/typeorm/cli.js -d src/database/data-source.ts",
+    "mig:gen": "pnpm typeorm migration:generate",
+    "mig:rev": "pnpm typeorm migration:revert",
     "mig:run:dev": "pnpm ts-node src/database/scripts/migrate.script.ts",
     "mig:run:prod": "node dist/database/scripts/migrate.scripts.js"
   },

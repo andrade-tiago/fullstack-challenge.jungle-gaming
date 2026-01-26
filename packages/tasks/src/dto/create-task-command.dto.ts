@@ -37,4 +37,7 @@ export class CreateTaskCommandDTO {
   @ArrayNotEmpty()
   @IsUUID('all', { each: true })
   userIds!: string[]
+
+  @IsUUID('all')
+  userId!: string
 }

@@ -1,6 +1,6 @@
-import { IsUUID } from 'class-validator'
+import { PickType } from '@nestjs/swagger'
+import { UpdateTaskCommandDTO } from './update-task-command.dto'
 
-export class DeleteTaskCommandDTO {
-  @IsUUID('all')
-  id!: string
-}
+export class DeleteTaskCommandDTO
+  extends PickType(UpdateTaskCommandDTO, ['id', 'userId'])
+{}
