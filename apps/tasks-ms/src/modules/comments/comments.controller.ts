@@ -2,9 +2,12 @@ import { Controller } from '@nestjs/common'
 import { MessagePattern, Payload } from '@nestjs/microservices'
 import { CommentsService } from './comments.service'
 import {
+  CommentPublicDTO,
   CreateCommentCommandDTO,
   CreateCommentCommandResponseDTO,
+  GetTaskCommentsPagedQueryDTO,
 } from '@packages/tasks'
+import { Pagination } from '@packages/types'
 
 @Controller()
 export class CommentsController {
@@ -13,11 +16,20 @@ export class CommentsController {
   ) {}
 
   @MessagePattern({ cmd: 'comments.create' })
-  async create(@Payload() commentData: CreateCommentCommandDTO)
+  async create(@Payload() dto: CreateCommentCommandDTO)
     : Promise<CreateCommentCommandResponseDTO>
   {
-    const id = await this._commentsService.create(commentData)
+    const id = await this._commentsService.create({ ...dto })
 
     return { id }
+  }
+
+  @MessagePattern({ cmd: 'task.comments' })
+  async getTaskCommentsPaged(
+    @Payload() dto: GetTaskCommentsPagedQueryDTO,
+  )
+    : Promise<Pagination<CommentPublicDTO>>
+  {
+    return this._commentsService.getTaskCommentsPaged({ ...dto })
   }
 }

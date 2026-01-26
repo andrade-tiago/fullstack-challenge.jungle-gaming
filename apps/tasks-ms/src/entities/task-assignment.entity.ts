@@ -27,6 +27,6 @@ export class TaskAssignment
   @JoinColumn({ name: 'task_id' })
   task!: Task
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   assignedAt!: Date
 }

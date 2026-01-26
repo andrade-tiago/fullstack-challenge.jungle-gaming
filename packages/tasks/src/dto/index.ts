@@ -14,6 +14,9 @@ export * from './delete-task-command.dto'
 
 export * from './get-task-by-id-query.dto'
 
+export * from './get-task-comments-paged-query.dto'
+export * from './get-task-comments-paged-request.dto'
+
 export * from './get-tasks-paged-query.dto'
 export * from './get-tasks-paged-request.dto'
 

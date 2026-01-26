@@ -2,10 +2,12 @@ import { Inject, Injectable } from '@nestjs/common'
 import { ClientProxy } from '@nestjs/microservices'
 import { TASKS_CLIENT } from '../clients/clients/tasks.client'
 import { firstValueFrom } from 'rxjs'
-import {
+import type {
   CommentPublicDTO,
   CreateCommentCommandDTO,
-  CreateCommentCommandResponseDTO } from '@packages/tasks'
+  CreateCommentCommandResponseDTO, 
+  GetTaskCommentsPagedQueryDTO } from '@packages/tasks'
+import type { Pagination } from '@packages/types'
 
 @Injectable()
 export class CommentsService {
@@ -23,5 +25,16 @@ export class CommentsService {
     const result = await firstValueFrom(createTaskComment$)
 
     return result.id
+  }
+
+  public async getTaskCommentsPaged(
+    dto: GetTaskCommentsPagedQueryDTO,
+  )
+    : Promise<Pagination<CommentPublicDTO>>
+  {
+    const getTaskCommentsPaged$ = this._tasksClient
+      .send<Pagination<CommentPublicDTO>>({ cmd: 'task.comments' }, dto)
+
+    return firstValueFrom(getTaskCommentsPaged$)
   }
 }
