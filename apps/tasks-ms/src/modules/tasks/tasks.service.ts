@@ -16,6 +16,7 @@ import type {
   TaskPublicDTO,
   UpdateTaskCommandDTO } from '@packages/tasks'
 import { TaskLogsService } from './logs/task-logs.service'
+import { TaskEventsService } from '../clients/services'
 
 @Injectable()
 export class TasksService {
@@ -28,7 +29,8 @@ export class TasksService {
 
     private readonly _tasksMapper: TasksMapper,
     private readonly _usersService: UsersService,
-    private readonly _taskLogsService: TaskLogsService,
+    private readonly _logsService: TaskLogsService,
+    private readonly _eventsService: TaskEventsService,
   ) {}
 
   public async create({ userId, ...taskData }: CreateTaskCommandDTO)
@@ -48,13 +50,15 @@ export class TasksService {
     )
     await this._tasksRepository.save(newTask)
 
-    await this._taskLogsService.log({
+    this._eventsService.publishTaskCreated(
+      this._tasksMapper.toPublicDTO(newTask),
+    )
+    await this._logsService.log({
       action: LogAction.CREATE,
       metadata: taskData,
       taskId: newTask.id,
       userId,
     })
-
     return newTask.id
   }
 
@@ -111,13 +115,15 @@ export class TasksService {
     this._tasksRepository.merge(task, taskData)
     await this._tasksRepository.save(task)
 
-    await this._taskLogsService.log({
+    this._eventsService.publishTaskUpdated({
+      id, ...taskData,
+    })
+    await this._logsService.log({
       action: LogAction.UPDATE,
       taskId: id,
       metadata: taskData,
       userId,
     })
-
     return this._tasksMapper.toPublicDTO(task)
   }
 
@@ -133,7 +139,7 @@ export class TasksService {
       })
     }
 
-    await this._taskLogsService.log({
+    await this._logsService.log({
       action: LogAction.DELETE,
       taskId: id,
       userId,

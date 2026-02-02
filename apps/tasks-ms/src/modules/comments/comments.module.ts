@@ -6,9 +6,11 @@ import { Comment } from '@/entities/comment.entity'
 import { Task } from '@/entities/task.entity'
 import { UsersModule } from '../users/users.module'
 import { CommentsMapper } from './comments.mapper'
+import { ClientsModule } from '../clients/clients.module'
 
 @Module({
   imports: [
+    ClientsModule,
     TypeOrmModule.forFeature([ Comment, Task ]),
     UsersModule,
   ],

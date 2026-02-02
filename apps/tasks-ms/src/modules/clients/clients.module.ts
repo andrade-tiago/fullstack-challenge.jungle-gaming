@@ -1,14 +1,20 @@
 import { Module } from '@nestjs/common'
 import { ClientsConfigProvider } from './clients.config'
-import { AuthClientProvider } from './clients/auth.client'
+import {
+  AuthClientProvider,
+  TaskEventsClientProvider } from './clients'
+import { TaskEventsService } from './services'
 
 @Module({
   providers: [
-    ClientsConfigProvider,
     AuthClientProvider,
+    ClientsConfigProvider,
+    TaskEventsClientProvider,
+    TaskEventsService,
   ],
   exports: [
     AuthClientProvider,
+    TaskEventsService,
   ],
 })
 export class ClientsModule {}

@@ -11,7 +11,11 @@ import { TaskLogsService } from './logs/task-logs.service'
 @Module({
   imports: [
     ClientsModule,
-    TypeOrmModule.forFeature([ Task, TaskAssignment, TaskAuditLogs ]),
+    TypeOrmModule.forFeature([
+      Task,
+      TaskAssignment,
+      TaskAuditLogs,
+    ]),
     UsersModule,
   ],
   providers: [

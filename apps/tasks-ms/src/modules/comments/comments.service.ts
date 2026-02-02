@@ -4,13 +4,16 @@ import { Repository } from 'typeorm'
 import { Comment } from '@/entities/comment.entity'
 import { Task } from '@/entities/task.entity'
 import { UsersService } from '../users/users.service'
-import { AppRpcException, AppRpcExceptionType } from '@packages/microservices'
+import {
+  AppRpcException,
+  AppRpcExceptionType } from '@packages/microservices'
 import { CommentsMapper } from './comments.mapper'
+import { Pagination } from '@packages/types'
+import { TaskEventsService } from '../clients/services'
 import type {
   CommentPublicDTO,
   CreateCommentCommandDTO,
   GetTaskCommentsPagedQueryDTO } from '@packages/tasks'
-import { Pagination } from '@packages/types'
 
 @Injectable()
 export class CommentsService {
@@ -23,6 +26,7 @@ export class CommentsService {
 
     private readonly _usersService: UsersService,
     private readonly _commentsMapper: CommentsMapper,
+    private readonly _eventsService: TaskEventsService,
   ) {}
 
   async create(dto: CreateCommentCommandDTO)
@@ -36,10 +40,13 @@ export class CommentsService {
       content: dto.content,
       userId: dto.userId,
     })
+    await this._commentsRepository.save(newComment)
 
-    const createdComment = await this._commentsRepository.save(newComment)
-
-    return createdComment.id
+    this._eventsService.publishTaskCommented({
+      ...dto,
+      commentId: newComment.id,
+    })
+    return newComment.id
   }
 
   async getTaskCommentsPaged(
